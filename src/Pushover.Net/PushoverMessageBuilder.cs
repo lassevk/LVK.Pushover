@@ -20,8 +20,11 @@ public partial class PushoverMessageBuilder
     {
         foreach (string userOrGroupKey in userOrGroupKeys)
         {
-            ValidationHelper.ValidateUserOrGroupKey(userOrGroupKey);
-            _recipientKeys.Add(userOrGroupKey);
+            string? key = ValidationHelper.ValidateUserOrGroupKey(userOrGroupKey);
+            if (key is not null)
+            {
+                _recipientKeys.Add(userOrGroupKey);
+            }
         }
 
         return this;
@@ -46,7 +49,6 @@ public partial class PushoverMessageBuilder
     // todo: priority
     // todo: sound
     // todo: timestamp
-    // todo: title
     // todo: ttl
     // todo: url
     // todo: url_title
@@ -88,6 +90,7 @@ public partial class PushoverMessageBuilder
     {
         builder.Add("user", string.Join(",", _recipientKeys));
         builder.Add("message", _message);
+        builder.Add("title", _title);
         builder.Add("device", string.Join(",", _deviceIds));
     }
 }

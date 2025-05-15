@@ -39,28 +39,45 @@ internal static partial class ValidationHelper
         };
     }
 
-    public static void ValidateUserOrGroupKey(string userOrGroupKey)
+    public static string? ValidateUserOrGroupKey(string? userOrGroupKey)
     {
-        if (string.IsNullOrWhiteSpace(userOrGroupKey))
+        if (userOrGroupKey is null)
         {
-            throw new InvalidOperationException("User or group key cannot be null or empty.");
+            return null;
         }
-        if (!KeyOrApiTokenPattern().IsMatch(userOrGroupKey))
+
+        userOrGroupKey = userOrGroupKey.Trim();
+        if (userOrGroupKey.Length == 0)
         {
-            throw new InvalidOperationException($"Invalid user or group key: {userOrGroupKey}.");
+            return null;
         }
+
+        if (KeyOrApiTokenPattern().IsMatch(userOrGroupKey))
+        {
+            return userOrGroupKey;
+        }
+
+        throw new InvalidOperationException($"Invalid user or group key: {userOrGroupKey}.");
     }
 
-    public static void ValidateApiToken(string apiToken)
+    public static string? ValidateApiToken(string? apiToken)
     {
-        if (string.IsNullOrWhiteSpace(apiToken))
+        if (apiToken is null)
         {
-            throw new InvalidOperationException("API token cannot be null or empty.");
+            return null;
         }
 
-        if (!KeyOrApiTokenPattern().IsMatch(apiToken))
+        apiToken = apiToken.Trim();
+        if (apiToken.Length == 0)
         {
-            throw new InvalidOperationException($"Invalid API token: {apiToken}.");
+            return null;
         }
+
+        if (KeyOrApiTokenPattern().IsMatch(apiToken))
+        {
+            return apiToken;
+        }
+
+        throw new InvalidOperationException($"Invalid API token: {apiToken}.");
     }
 }

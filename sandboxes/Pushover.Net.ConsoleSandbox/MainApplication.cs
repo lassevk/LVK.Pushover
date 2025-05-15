@@ -11,6 +11,6 @@ public class MainApplication
 
     public async Task RunAsync(CancellationToken cancellationToken)
     {
-        await _pushoverClient.SendMessageAsync(message => message.WithMessage("Hello world!"), cancellationToken);
+        await _pushoverClient.SendMessageAsync(message => message.WithMessage("Hello world!").WithTitle("Some title"), cancellationToken);
     }
 }
