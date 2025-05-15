@@ -20,7 +20,8 @@ public partial class PushoverMessageBuilder
     private TimeSpan _retryInterval;
     private TimeSpan _expiresAfter;
     private string? _callbackUrl;
-    private TimeSpan _ttl;
+    private TimeSpan? _ttl;
+    private DateTimeOffset? _timestamp;
 
     [GeneratedRegex("^[a-zA-Z0-9]{30}$")]
     private partial Regex UserOrGroupKeyPattern();
@@ -142,17 +143,21 @@ public partial class PushoverMessageBuilder
         return this;
     }
 
-    public PushoverMessageBuilder WithTimeToLive(TimeSpan ttl)
+    public PushoverMessageBuilder WithTimeToLive(TimeSpan? ttl)
     {
         _ttl = ttl;
+        return this;
+    }
+
+    public PushoverMessageBuilder WithTimestamp(DateTimeOffset? timestamp)
+    {
+        _timestamp = timestamp;
         return this;
     }
 
     // todo: attachment
     // todo: attachment_base64
     // todo: attachment_type
-    // todo: timestamp
-    // todo: ttl
     // todo: recipts
     // todo: get result from receipt
     // todo: cancel retries
@@ -202,7 +207,8 @@ public partial class PushoverMessageBuilder
         builder.AddIfNotNullOrEmpty("url", _url);
         builder.AddIfNotNullOrEmpty("url_title", _urlTitle);
         builder.AddIfNotNullOrEmpty("sound", _sound);
-        builder.AddIfNotNullOrEmpty("ttl", _ttl != TimeSpan.Zero ? ((int)_ttl.TotalSeconds).ToString() : null);
+        builder.AddIfNotNullOrEmpty("ttl", _ttl != null && _ttl != TimeSpan.Zero ? ((int)_ttl.Value.TotalSeconds).ToString() : null);
+        builder.AddIfNotNullOrEmpty("timestamp", _timestamp?.ToUnixTimeSeconds().ToString());
 
         builder.AddIfNotNullOrEmpty("priority", _priority != PushoverMessagePriority.Default ? ((int)_priority).ToString() : null);;
         builder.AddIfNotNullOrEmpty("retry", _priority == PushoverMessagePriority.Emergency ? ((int)_retryInterval.TotalSeconds).ToString() : null);

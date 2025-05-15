@@ -11,6 +11,6 @@ public class MainApplication
 
     public async Task RunAsync(CancellationToken cancellationToken)
     {
-        await _pushoverClient.SendMessageAsync(message => message.WithMessage("Hello world!").WithTimeToLive(TimeSpan.FromMinutes(1)), cancellationToken);
+        await _pushoverClient.SendMessageAsync(message => message.WithMessage("Hello world!").WithTimestamp(DateTimeOffset.Now.AddHours(-2)), cancellationToken);
     }
 }
