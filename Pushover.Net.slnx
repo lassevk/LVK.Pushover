@@ -1,1 +1,11 @@
-﻿<Solution />
+﻿<Solution>
+  <Folder Name="/sandboxes/">
+    <Project Path="sandboxes\Pushover.Net.ConsoleSandbox\Pushover.Net.ConsoleSandbox.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src\Pushover.Net\Pushover.Net.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests\Pushover.Net.Tests\Pushover.Net.Tests.csproj" Type="Classic C#" />
+  </Folder>
+</Solution>
