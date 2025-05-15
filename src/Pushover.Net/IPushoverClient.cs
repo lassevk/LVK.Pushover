@@ -9,4 +9,6 @@ public interface IPushoverClient
 
     Task<PushoverSendMessageResponse> SendMessageAsync(string message, CancellationToken cancellationToken) => SendMessageAsync(messageBuilder => messageBuilder.WithMessage(message), cancellationToken);
     Task<PushoverUserValidationResponse> ValidateUserOrGroupAsync(string userKey, string? deviceId = null, CancellationToken cancellationToken = default);
+
+    Task<PushoverReceiptStatusResponse> GetReceiptStatusAsync(string receiptId, CancellationToken cancellationToken = default);
 }

@@ -10,6 +10,7 @@ internal class PushoverClient : IPushoverClient
     private const string _pushoverApiBaseUrl = "https://api.pushover.net";
     private const string _pushoverApiSendMessageUrl = $"{_pushoverApiBaseUrl}/1/messages.json";
     private const string _pushoverApiValidateUserUrl = $"{_pushoverApiBaseUrl}/1/users/validate.json";
+    private const string _pushoverApiReceiptsBaseUrl = $"{_pushoverApiBaseUrl}/1/receipts/";
 
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<PushoverClient> _logger;
@@ -23,8 +24,6 @@ internal class PushoverClient : IPushoverClient
         _options.Validate();
     }
 
-    // todo: recipts
-    // todo: get result from receipt
     // todo: cancel retries
 
     public async Task<PushoverUserValidationResponse> ValidateUserOrGroupAsync(string userKey, string? deviceId = null, CancellationToken cancellationToken = default)
@@ -35,6 +34,35 @@ internal class PushoverClient : IPushoverClient
         requestBuilder.AddIfNotNullOrEmpty("device", deviceId);
 
         return await PostToApiAsync<PushoverUserValidationResponse>(_pushoverApiValidateUserUrl, requestBuilder.Content, cancellationToken);
+    }
+
+    public async Task<PushoverReceiptStatusResponse> GetReceiptStatusAsync(string receiptId, CancellationToken cancellationToken = default)
+    {
+        string url = $"{_pushoverApiReceiptsBaseUrl}{receiptId}.json?token={_options.ApiToken}";
+        HttpClient client = _httpClientFactory.CreateClient();
+
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug("Sending request to Pushover {Url}", url);
+        }
+
+        HttpResponseMessage response = await client.GetAsync(url, cancellationToken);
+        string responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug("Response from Pushover {Url}: {Response}", url, responseContent);
+        }
+
+        PushoverReceiptStatusResponse responseObject = JsonSerializer.Deserialize<PushoverReceiptStatusResponse>(responseContent) ?? new();
+        try
+        {
+            response.EnsureSuccessStatusCode();
+            return responseObject;
+        }
+        catch (Exception ex)
+        {
+            throw new PushoverApiRequestFailedException(responseObject, ex);
+        }
     }
 
     private async Task<T> PostToApiAsync<T>(string url, HttpContent content, CancellationToken cancellationToken)
@@ -62,7 +90,7 @@ internal class PushoverClient : IPushoverClient
         }
         catch (Exception ex)
         {
-            throw new PushoverSendFailedException(responseObject, ex);
+            throw new PushoverApiRequestFailedException(responseObject, ex);
         }
     }
 

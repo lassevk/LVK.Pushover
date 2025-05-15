@@ -19,6 +19,30 @@
       <Compile Update="PushoverClient.cs">
         <DependentUpon>IPushoverClient.cs</DependentUpon>
       </Compile>
+      <Compile Update="PushoverSendMessageResponse.cs">
+        <DependentUpon>PushoverResponse.cs</DependentUpon>
+      </Compile>
+      <Compile Update="PushoverResponseStatus.cs">
+        <DependentUpon>PushoverResponse.cs</DependentUpon>
+      </Compile>
+      <Compile Update="PushoverReceiptStatusResponse.cs">
+        <DependentUpon>PushoverResponse.cs</DependentUpon>
+      </Compile>
+      <Compile Update="PushoverUserValidationResponse.cs">
+        <DependentUpon>PushoverResponse.cs</DependentUpon>
+      </Compile>
+      <Compile Update="PushoverMessageSound.cs">
+        <DependentUpon>PushoverMessageBuilder.cs</DependentUpon>
+      </Compile>
+      <Compile Update="PushoverMessageFormat.cs">
+        <DependentUpon>PushoverMessageBuilder.cs</DependentUpon>
+      </Compile>
+      <Compile Update="PushoverMessagePriority.cs">
+        <DependentUpon>PushoverMessageBuilder.cs</DependentUpon>
+      </Compile>
+      <Compile Update="BooleanIntJsonConverter.cs">
+        <DependentUpon>PushoverReceiptStatusResponse.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

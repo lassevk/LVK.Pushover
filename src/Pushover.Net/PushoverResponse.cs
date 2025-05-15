@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Pushover.Net;
@@ -16,4 +17,7 @@ public abstract class PushoverResponse
 
     [JsonPropertyName("errors")]
     public List<string> Errors { get; set; } = [];
+
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement> ExtensionData { get; set; } = new();
 }

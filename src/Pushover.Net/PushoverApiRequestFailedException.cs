@@ -1,8 +1,8 @@
 namespace Pushover.Net;
 
-public class PushoverSendFailedException : InvalidOperationException
+public class PushoverApiRequestFailedException : InvalidOperationException
 {
-    public PushoverSendFailedException(PushoverResponse response, Exception? innerException = null)
+    public PushoverApiRequestFailedException(PushoverResponse response, Exception? innerException = null)
         : base(innerException?.Message ?? "Pushover request failed.", innerException)
     {
         Errors = response.Errors.ToArray();
