@@ -7,7 +7,7 @@ public class PushoverRequestBuilderTests
     public async Task Encoding_WithTestCases_BehavesAsExpected(string key, string message, string expected)
     {
         var builder = new PushoverRequestBuilder("abcdefg");
-        builder.Add(key, message);
+        builder.AddIfNotNullOrEmpty(key, message);
 
         string result = await builder.Content.ReadAsStringAsync();
         Assert.That(result, Is.EqualTo(expected));

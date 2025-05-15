@@ -16,7 +16,7 @@ internal class PushoverRequestBuilder
         }
     }
 
-    public void Add(string key, string? value)
+    public void AddIfNotNullOrEmpty(string key, string? value)
     {
         if (!string.IsNullOrWhiteSpace(value))
         {

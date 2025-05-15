@@ -80,4 +80,36 @@ internal static partial class ValidationHelper
 
         throw new InvalidOperationException($"Invalid API token: {apiToken}.");
     }
+
+    public static string? ValidateUrl(string? url)
+    {
+        if (url is null)
+        {
+            return null;
+        }
+
+        url = url.Trim();
+        return url.Length switch
+        {
+            0     => null,
+            > 256 => throw new InvalidOperationException("Url cannot be longer than 256 characters."),
+            _     => url,
+        };
+    }
+
+    public static string? ValidateUrlTitle(string? title)
+    {
+        if (title is null)
+        {
+            return null;
+        }
+
+        title = title.Trim();
+        return title.Length switch
+        {
+            0    => null,
+            > 25 => throw new InvalidOperationException("Url title cannot be longer than 250 characters."),
+            _    => title,
+        };
+    }
 }

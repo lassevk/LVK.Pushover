@@ -24,7 +24,7 @@ internal class PushoverClient : IPushoverClient
         messageBuilder.Validate();
 
         var requestBuilder = new PushoverRequestBuilder();
-        requestBuilder.Add("token", _options.ApiToken);
+        requestBuilder.AddIfNotNullOrEmpty("token", _options.ApiToken);
         messageBuilder.ConfigureRequest(requestBuilder);
 
         HttpClient client = _httpClientFactory.CreateClient();

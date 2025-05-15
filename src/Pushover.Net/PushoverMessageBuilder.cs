@@ -9,7 +9,10 @@ public partial class PushoverMessageBuilder
     private readonly List<string> _recipientKeys = [];
     private readonly List<string> _deviceIds = [];
     private string? _message;
+    private PushoverMessageFormat _messageFormat = PushoverMessageFormat.Default;
     private string? _title;
+    private string? _url;
+    private string? _urlTitle;
 
     [GeneratedRegex("^[a-zA-Z0-9]{30}$")]
     private partial Regex UserOrGroupKeyPattern();
@@ -30,9 +33,15 @@ public partial class PushoverMessageBuilder
         return this;
     }
 
-    public PushoverMessageBuilder WithMessage(string? message)
+    public PushoverMessageBuilder WithMessage(string? message, PushoverMessageFormat format = PushoverMessageFormat.Default)
     {
+        if (!Enum.IsDefined(_messageFormat))
+        {
+            throw new InvalidOperationException($"Invalid message format: {_messageFormat}.");
+        }
+
         _message = ValidationHelper.ValidateMessage(message);
+        _messageFormat = format;
         return this;
     }
 
@@ -42,16 +51,32 @@ public partial class PushoverMessageBuilder
         return this;
     }
 
+    public PushoverMessageBuilder WithUrl(string? url)
+    {
+        _url = ValidationHelper.ValidateUrl(url);
+        return this;
+    }
+
+    public PushoverMessageBuilder WithUrlTitle(string? title)
+    {
+        _urlTitle = ValidationHelper.ValidateUrlTitle(title);
+        return this;
+    }
+
+    public PushoverMessageBuilder WithUrlWithTitle(string? url, string? title)
+    {
+        _url = ValidationHelper.ValidateUrl(url);
+        _urlTitle = ValidationHelper.ValidateUrlTitle(title);
+        return this;
+    }
+
     // todo: attachment
     // todo: attachment_base64
     // todo: attachment_type
-    // todo: html
     // todo: priority
     // todo: sound
     // todo: timestamp
     // todo: ttl
-    // todo: url
-    // todo: url_title
 
     public PushoverMessageBuilder WithTargetDevice(string deviceId) => WithTargetDevices(deviceId);
     public PushoverMessageBuilder WithTargetDevices(params ReadOnlySpan<string> deviceIds)
@@ -88,9 +113,12 @@ public partial class PushoverMessageBuilder
 
     internal void ConfigureRequest(PushoverRequestBuilder builder)
     {
-        builder.Add("user", string.Join(",", _recipientKeys));
-        builder.Add("message", _message);
-        builder.Add("title", _title);
-        builder.Add("device", string.Join(",", _deviceIds));
+        builder.AddIfNotNullOrEmpty("user", string.Join(",", _recipientKeys));
+        builder.AddIfNotNullOrEmpty("message", _message);
+        builder.AddIfNotNullOrEmpty("title", _title);
+        builder.AddIfNotNullOrEmpty("html", _messageFormat == PushoverMessageFormat.Html ? "1" : null);
+        builder.AddIfNotNullOrEmpty("device", string.Join(",", _deviceIds));
+        builder.AddIfNotNullOrEmpty("url", _url);
+        builder.AddIfNotNullOrEmpty("url_title", _urlTitle);
     }
 }
