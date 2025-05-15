@@ -1,6 +1,7 @@
 // ReSharper disable MemberCanBePrivate.Global
 
 using System.Globalization;
+using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading.Channels;
 
@@ -22,6 +23,9 @@ public partial class PushoverMessageBuilder
     private string? _callbackUrl;
     private TimeSpan? _ttl;
     private DateTimeOffset? _timestamp;
+    private byte[]? _attachment;
+    private string? _attachmentName;
+    private string? _attachmentType;
 
     [GeneratedRegex("^[a-zA-Z0-9]{30}$")]
     private partial Regex UserOrGroupKeyPattern();
@@ -155,9 +159,33 @@ public partial class PushoverMessageBuilder
         return this;
     }
 
-    // todo: attachment
-    // todo: attachment_base64
-    // todo: attachment_type
+    public PushoverMessageBuilder WithAttachment(FileInfo file) => WithAttachment(file.FullName);
+    public PushoverMessageBuilder WithAttachment(string filePath)
+    {
+        using FileStream stream = File.OpenRead(filePath);
+        return WithAttachment(Path.GetFileName(filePath), stream);
+    }
+
+    public PushoverMessageBuilder WithAttachment(string attachmentName, Stream attachment, string? mimeType = null)
+    {
+        if (attachment is MemoryStream memoryStream)
+        {
+            return WithAttachment(attachmentName, memoryStream.ToArray(), mimeType);
+        }
+
+        memoryStream = new MemoryStream();
+        attachment.CopyTo(memoryStream);
+        return WithAttachment(attachmentName, memoryStream.ToArray(), mimeType);
+    }
+
+    public PushoverMessageBuilder WithAttachment(string attachmentName, ReadOnlySpan<byte> attachment, string? mimeType = null)
+    {
+        _attachment = attachment.ToArray();
+        _attachmentName = attachmentName;
+        _attachmentType = mimeType ?? MimeTypes.GetMimeType(attachmentName);
+        return this;
+    }
+
     // todo: recipts
     // todo: get result from receipt
     // todo: cancel retries
@@ -195,6 +223,18 @@ public partial class PushoverMessageBuilder
         {
             throw new InvalidOperationException("Message is required.");
         }
+
+        if (_attachment is not null && _attachment.Length > 0)
+        {
+            if (_attachmentName is null)
+            {
+                throw new InvalidOperationException("Attachment name is required when specifying an attachment.");
+            }
+            if (_attachmentType is null)
+            {
+                throw new InvalidOperationException("Attachment type is required when specifying an attachment.");
+            }
+        }
     }
 
     internal void ConfigureRequest(PushoverRequestBuilder builder)
@@ -214,5 +254,10 @@ public partial class PushoverMessageBuilder
         builder.AddIfNotNullOrEmpty("retry", _priority == PushoverMessagePriority.Emergency ? ((int)_retryInterval.TotalSeconds).ToString() : null);
         builder.AddIfNotNullOrEmpty("expire", _priority == PushoverMessagePriority.Emergency ? ((int)_expiresAfter.TotalSeconds).ToString() : null);
         builder.AddIfNotNullOrEmpty("callback", _priority == PushoverMessagePriority.Emergency ? _callbackUrl : null);
+
+        if (_attachment is not null && _attachmentName != null && _attachmentType != null && _attachment.Length > 0)
+        {
+            builder.AddAttachment(_attachment, _attachmentName, _attachmentType);
+        }
     }
 }
