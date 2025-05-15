@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace Pushover.Net;
 
 [JsonObjectCreationHandling(JsonObjectCreationHandling.Populate)]
-public class PushoverResponse
+public abstract class PushoverResponse
 {
     [JsonPropertyName("status")]
     public PushoverResponseStatus Status { get; set; }
