@@ -8,26 +8,14 @@ public class PushoverOptions
 
     public PushoverOptions WithApiToken(string apiToken)
     {
-        ArgumentNullException.ThrowIfNull(apiToken);
-        apiToken = apiToken.Trim();
-        if (apiToken.Length != 30)
-        {
-            throw new InvalidOperationException("Invalid API token.");
-        }
-
+        ValidationHelper.ValidateApiToken(apiToken);
         ApiToken = apiToken;
         return this;
     }
 
     public PushoverOptions WithDefaultUser(string userKey)
     {
-        ArgumentNullException.ThrowIfNull(userKey);
-        userKey = userKey.Trim();
-        if (userKey.Length != 30)
-        {
-            throw new InvalidOperationException("Invalid user key.");
-        }
-
+        ValidationHelper.ValidateUserOrGroupKey(userKey);
         DefaultUserKey = userKey;
         return this;
     }

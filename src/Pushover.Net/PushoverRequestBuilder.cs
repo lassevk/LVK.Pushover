@@ -2,15 +2,23 @@ namespace Pushover.Net;
 
 internal class PushoverRequestBuilder
 {
-    private readonly MultipartFormDataContent _content = new();
+    private readonly MultipartFormDataContent _content;
 
-    public PushoverRequestBuilder()
+    public PushoverRequestBuilder(string? multipartBoundary = null)
     {
+        if (string.IsNullOrWhiteSpace(multipartBoundary))
+        {
+            _content = new MultipartFormDataContent();
+        }
+        else
+        {
+            _content = new MultipartFormDataContent(multipartBoundary);
+        }
     }
 
     public void Add(string key, string? value)
     {
-        if (value is not null)
+        if (!string.IsNullOrWhiteSpace(value))
         {
             _content.Add(new StringContent(value), key);
         }

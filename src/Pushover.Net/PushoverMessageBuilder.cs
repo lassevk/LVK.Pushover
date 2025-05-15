@@ -1,21 +1,59 @@
 // ReSharper disable MemberCanBePrivate.Global
+
+using System.Text.RegularExpressions;
+
 namespace Pushover.Net;
 
-public class PushoverMessageBuilder
+public partial class PushoverMessageBuilder
 {
     private readonly List<string> _recipientKeys = [];
+    private readonly List<string> _deviceIds = [];
     private string? _message;
 
+    [GeneratedRegex("^[a-zA-Z0-9]{30}$")]
+    private partial Regex UserOrGroupKeyPattern();
+
     public PushoverMessageBuilder WithRecipient(string userOrGroupKey) => WithRecipients(userOrGroupKey);
+
     public PushoverMessageBuilder WithRecipients(params ReadOnlySpan<string> userOrGroupKeys)
     {
-        _recipientKeys.AddRange(userOrGroupKeys);
+        foreach (string userOrGroupKey in userOrGroupKeys)
+        {
+            ValidationHelper.ValidateUserOrGroupKey(userOrGroupKey);
+            _recipientKeys.Add(userOrGroupKey);
+        }
+
         return this;
     }
 
     public PushoverMessageBuilder WithMessage(string message)
     {
+        ValidationHelper.ValidateMessage(message);
+        if (_message is not null)
+        {
+            throw new InvalidOperationException("Message is already set.");
+        }
+
         _message = message ?? throw new ArgumentNullException(nameof(message));
+        return this;
+    }
+
+    // todo: attachment
+    // todo: attachment_base64
+    // todo: attachment_type
+    // todo: html
+    // todo: priority
+    // todo: sound
+    // todo: timestamp
+    // todo: title
+    // todo: ttl
+    // todo: url
+    // todo: url_title
+
+    public PushoverMessageBuilder WithTargetDevice(string deviceId) => WithTargetDevices(deviceId);
+    public PushoverMessageBuilder WithTargetDevices(params ReadOnlySpan<string> deviceIds)
+    {
+        _deviceIds.AddRange(deviceIds);
         return this;
     }
 
@@ -49,5 +87,6 @@ public class PushoverMessageBuilder
     {
         builder.Add("user", string.Join(",", _recipientKeys));
         builder.Add("message", _message);
+        builder.Add("device", string.Join(",", _deviceIds));
     }
 }
