@@ -9,6 +9,7 @@ public partial class PushoverMessageBuilder
     private readonly List<string> _recipientKeys = [];
     private readonly List<string> _deviceIds = [];
     private string? _message;
+    private string? _title;
 
     [GeneratedRegex("^[a-zA-Z0-9]{30}$")]
     private partial Regex UserOrGroupKeyPattern();
@@ -26,15 +27,15 @@ public partial class PushoverMessageBuilder
         return this;
     }
 
-    public PushoverMessageBuilder WithMessage(string message)
+    public PushoverMessageBuilder WithMessage(string? message)
     {
-        ValidationHelper.ValidateMessage(message);
-        if (_message is not null)
-        {
-            throw new InvalidOperationException("Message is already set.");
-        }
+        _message = ValidationHelper.ValidateMessage(message);
+        return this;
+    }
 
-        _message = message ?? throw new ArgumentNullException(nameof(message));
+    public PushoverMessageBuilder WithTitle(string? title)
+    {
+        _title = ValidationHelper.ValidateTitle(title);
         return this;
     }
 

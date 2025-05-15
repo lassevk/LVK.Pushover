@@ -7,30 +7,36 @@ internal static partial class ValidationHelper
     [GeneratedRegex("^[a-zA-Z0-9]{30}$")]
     private static partial Regex KeyOrApiTokenPattern();
 
-    public static void ValidateMessage(string message)
+    public static string? ValidateMessage(string? message)
     {
-        if (string.IsNullOrWhiteSpace(message))
+        if (message is null)
         {
-            throw new InvalidOperationException("Message cannot be null or empty.");
+            return null;
         }
 
-        if (message.Length > 1024)
+        message = message.Trim();
+        return message.Length switch
         {
-            throw new InvalidOperationException("Message cannot be longer than 1024 characters.");
-        }
+            0      => null,
+            > 1024 => throw new InvalidOperationException("Message cannot be longer than 1024 characters."),
+            _      => message,
+        };
     }
 
-    public static void ValidateTitle(string title)
+    public static string? ValidateTitle(string? title)
     {
-        if (string.IsNullOrWhiteSpace(title))
+        if (title is null)
         {
-            throw new InvalidOperationException("Title cannot be null or empty.");
+            return null;
         }
 
-        if (title.Length > 250)
+        title = title.Trim();
+        return title.Length switch
         {
-            throw new InvalidOperationException("Title cannot be longer than 250 characters.");
-        }
+            0     => null,
+            > 250 => throw new InvalidOperationException("Title cannot be longer than 250 characters."),
+            _     => title,
+        };
     }
 
     public static void ValidateUserOrGroupKey(string userOrGroupKey)
