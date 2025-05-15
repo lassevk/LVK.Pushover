@@ -31,6 +31,7 @@ public static class ServiceCollectionExtensions
 
         services.Configure(configureOptions);
         services.AddTransient<IPushoverClient, PushoverClient>();
+        services.AddHttpClient();
 
         return services;
     }
