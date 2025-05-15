@@ -186,10 +186,6 @@ public partial class PushoverMessageBuilder
         return this;
     }
 
-    // todo: recipts
-    // todo: get result from receipt
-    // todo: cancel retries
-    // todo: validate user or group keys
     // todo: tags?
 
     public PushoverMessageBuilder WithTargetDevice(string deviceId) => WithTargetDevices(deviceId);
@@ -242,7 +238,24 @@ public partial class PushoverMessageBuilder
         builder.AddIfNotNullOrEmpty("user", string.Join(",", _recipientKeys));
         builder.AddIfNotNullOrEmpty("message", _message);
         builder.AddIfNotNullOrEmpty("title", _title);
-        builder.AddIfNotNullOrEmpty("html", _messageFormat == PushoverMessageFormat.Html ? "1" : null);
+
+        switch (_messageFormat)
+        {
+            case PushoverMessageFormat.Plaintext:
+                break;
+
+            case PushoverMessageFormat.Monospace:
+                builder.AddIfNotNullOrEmpty("monospace", "1");
+                break;
+
+            case PushoverMessageFormat.Html:
+                builder.AddIfNotNullOrEmpty("html", "1");
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
         builder.AddIfNotNullOrEmpty("device", string.Join(",", _deviceIds));
         builder.AddIfNotNullOrEmpty("url", _url);
         builder.AddIfNotNullOrEmpty("url_title", _urlTitle);

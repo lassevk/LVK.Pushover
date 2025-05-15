@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -19,7 +21,12 @@ internal class PushoverClient : IPushoverClient
         _options.Validate();
     }
 
-    public async Task SendMessageAsync(Action<PushoverMessageBuilder> configureMessage, CancellationToken cancellationToken)
+    // todo: recipts
+    // todo: get result from receipt
+    // todo: cancel retries
+    // todo: validate user or group keys
+
+    public async Task<PushoverResponse> SendMessageAsync(Action<PushoverMessageBuilder> configureMessage, CancellationToken cancellationToken)
     {
         var messageBuilder = new PushoverMessageBuilder();
         configureMessage(messageBuilder);
@@ -38,6 +45,18 @@ internal class PushoverClient : IPushoverClient
         }
 
         HttpResponseMessage response = await client.PostAsync(_pushoverApiUrl, requestBuilder.Content, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        try
+        {
+            response.EnsureSuccessStatusCode();
+
+            string responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            return JsonSerializer.Deserialize<PushoverResponse>(responseContent) ?? new();
+        }
+        catch (Exception ex)
+        {
+            string errorResponseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            PushoverResponse responseObject = JsonSerializer.Deserialize<PushoverResponse>(errorResponseContent) ?? new();
+            throw new PushoverSendFailedException(responseObject, ex);
+        }
     }
 }
