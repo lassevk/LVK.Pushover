@@ -26,6 +26,7 @@ public partial class PushoverMessageBuilder
     private byte[]? _attachment;
     private string? _attachmentName;
     private string? _attachmentType;
+    private List<PushoverMessageTag> _tags = [];
 
     [GeneratedRegex("^[a-zA-Z0-9]{30}$")]
     private partial Regex UserOrGroupKeyPattern();
@@ -186,7 +187,12 @@ public partial class PushoverMessageBuilder
         return this;
     }
 
-    // todo: tags?
+    public PushoverMessageBuilder WithTag(string key, string value) => WithTags(new PushoverMessageTag(key, value));
+    public PushoverMessageBuilder WithTags(params PushoverMessageTag[] tags)
+    {
+        _tags.AddRange(tags);
+        return this;
+    }
 
     public PushoverMessageBuilder WithTargetDevice(string deviceId) => WithTargetDevices(deviceId);
     public PushoverMessageBuilder WithTargetDevices(params ReadOnlySpan<string> deviceIds)
@@ -267,6 +273,8 @@ public partial class PushoverMessageBuilder
         builder.AddIfNotNullOrEmpty("retry", _priority == PushoverMessagePriority.Emergency ? ((int)_retryInterval.TotalSeconds).ToString() : null);
         builder.AddIfNotNullOrEmpty("expire", _priority == PushoverMessagePriority.Emergency ? ((int)_expiresAfter.TotalSeconds).ToString() : null);
         builder.AddIfNotNullOrEmpty("callback", _priority == PushoverMessagePriority.Emergency ? _callbackUrl : null);
+
+        builder.AddIfNotNullOrEmpty("tags", _tags.Count > 0 ? string.Join(",", _tags) : null);
 
         if (_attachment is not null && _attachmentName != null && _attachmentType != null && _attachment.Length > 0)
         {

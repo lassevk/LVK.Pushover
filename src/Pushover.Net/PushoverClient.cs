@@ -1,6 +1,5 @@
 using System.Text.Json;
 
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Pushover.Net;
@@ -10,16 +9,14 @@ internal class PushoverClient : IPushoverClient
     private const string _pushoverApiBaseUrl = "https://api.pushover.net";
     private const string _pushoverApiSendMessageUrl = $"{_pushoverApiBaseUrl}/1/messages.json";
     private const string _pushoverApiValidateUserUrl = $"{_pushoverApiBaseUrl}/1/users/validate.json";
-    private const string _pushoverApiReceiptsBaseUrl = $"{_pushoverApiBaseUrl}/1/receipts/";
+    private const string _pushoverApiReceiptsBaseUrl = $"{_pushoverApiBaseUrl}/1/receipts";
 
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ILogger<PushoverClient> _logger;
     private readonly PushoverOptions _options;
 
-    public PushoverClient(IOptions<PushoverOptions> options, IHttpClientFactory httpClientFactory, ILogger<PushoverClient> logger)
+    public PushoverClient(IOptions<PushoverOptions> options, IHttpClientFactory httpClientFactory)
     {
         _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
         _options.Validate();
     }
@@ -33,54 +30,39 @@ internal class PushoverClient : IPushoverClient
         requestBuilder.AddIfNotNullOrEmpty("user", userKey);
         requestBuilder.AddIfNotNullOrEmpty("device", deviceId);
 
-        return await PostToApiAsync<PushoverUserValidationResponse>(_pushoverApiValidateUserUrl, requestBuilder.Content, cancellationToken);
+        return await SendRequestAsync<PushoverUserValidationResponse>(client => client.PostAsync(_pushoverApiValidateUserUrl, requestBuilder.Content, cancellationToken), cancellationToken);
     }
 
     public async Task<PushoverReceiptStatusResponse> GetReceiptStatusAsync(string receiptId, CancellationToken cancellationToken = default)
     {
-        string url = $"{_pushoverApiReceiptsBaseUrl}{receiptId}.json?token={_options.ApiToken}";
-        HttpClient client = _httpClientFactory.CreateClient();
-
-        if (_logger.IsEnabled(LogLevel.Debug))
-        {
-            _logger.LogDebug("Sending request to Pushover {Url}", url);
-        }
-
-        HttpResponseMessage response = await client.GetAsync(url, cancellationToken);
-        string responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-        if (_logger.IsEnabled(LogLevel.Debug))
-        {
-            _logger.LogDebug("Response from Pushover {Url}: {Response}", url, responseContent);
-        }
-
-        PushoverReceiptStatusResponse responseObject = JsonSerializer.Deserialize<PushoverReceiptStatusResponse>(responseContent) ?? new();
-        try
-        {
-            response.EnsureSuccessStatusCode();
-            return responseObject;
-        }
-        catch (Exception ex)
-        {
-            throw new PushoverApiRequestFailedException(responseObject, ex);
-        }
+        string url = $"{_pushoverApiReceiptsBaseUrl}/{receiptId}.json?token={_options.ApiToken}";
+        return await SendRequestAsync<PushoverReceiptStatusResponse>(client => client.GetAsync(url, cancellationToken), cancellationToken);
     }
 
-    private async Task<T> PostToApiAsync<T>(string url, HttpContent content, CancellationToken cancellationToken)
+    public async Task<PushoverCancelRetriesResponse> CancelRetriesAsync(string receiptId, CancellationToken cancellationToken = default)
+    {
+        var requestBuilder = new PushoverRequestBuilder();
+        requestBuilder.AddIfNotNullOrEmpty("token", _options.ApiToken);
+        string url = $"{_pushoverApiReceiptsBaseUrl}/{receiptId}/cancel.json";
+
+        return await SendRequestAsync<PushoverCancelRetriesResponse>(client => client.PostAsync(url, requestBuilder.Content, cancellationToken), cancellationToken);
+    }
+
+    public async Task<PushoverCancelRetriesResponse> CancelRetriesByTagAsync(PushoverMessageTag tag, CancellationToken cancellationToken = default)
+    {
+        var requestBuilder = new PushoverRequestBuilder();
+        requestBuilder.AddIfNotNullOrEmpty("token", _options.ApiToken);
+        string url = $"{_pushoverApiReceiptsBaseUrl}/cancel_by_tag/{tag}.json";
+
+        return await SendRequestAsync<PushoverCancelRetriesResponse>(client => client.PostAsync(url, requestBuilder.Content, cancellationToken), cancellationToken);
+    }
+
+    private async Task<T> SendRequestAsync<T>(Func<HttpClient, Task<HttpResponseMessage>> sendRequestAsync, CancellationToken cancellationToken)
         where T: PushoverResponse, new()
     {
         HttpClient client = _httpClientFactory.CreateClient();
-        if (_logger.IsEnabled(LogLevel.Debug))
-        {
-            string debug = await content.ReadAsStringAsync(cancellationToken);
-            _logger.LogDebug("Sending request to Pushover {Url}: {Debug}", url, debug);
-        }
-
-        HttpResponseMessage response = await client.PostAsync(url, content, cancellationToken);
+        HttpResponseMessage response = await sendRequestAsync(client);
         string responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-        if (_logger.IsEnabled(LogLevel.Debug))
-        {
-            _logger.LogDebug("Response from Pushover {Url}: {Response}", url, responseContent);
-        }
         T responseObject = JsonSerializer.Deserialize<T>(responseContent) ?? new();
 
         try
@@ -105,6 +87,6 @@ internal class PushoverClient : IPushoverClient
         requestBuilder.AddIfNotNullOrEmpty("token", _options.ApiToken);
         messageBuilder.ConfigureRequest(requestBuilder);
 
-        return await PostToApiAsync<PushoverSendMessageResponse>(_pushoverApiSendMessageUrl, requestBuilder.Content, cancellationToken);
+        return await SendRequestAsync<PushoverSendMessageResponse>(client => client.PostAsync(_pushoverApiSendMessageUrl, requestBuilder.Content, cancellationToken), cancellationToken);
     }
 }

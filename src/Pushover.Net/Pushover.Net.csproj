@@ -43,6 +43,9 @@
       <Compile Update="BooleanIntJsonConverter.cs">
         <DependentUpon>PushoverReceiptStatusResponse.cs</DependentUpon>
       </Compile>
+      <Compile Update="PushoverCancelRetriesResponse.cs">
+        <DependentUpon>PushoverResponse.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

@@ -11,4 +11,7 @@ public interface IPushoverClient
     Task<PushoverUserValidationResponse> ValidateUserOrGroupAsync(string userKey, string? deviceId = null, CancellationToken cancellationToken = default);
 
     Task<PushoverReceiptStatusResponse> GetReceiptStatusAsync(string receiptId, CancellationToken cancellationToken = default);
+
+    Task<PushoverCancelRetriesResponse> CancelRetriesAsync(string receiptId, CancellationToken cancellationToken = default);
+    Task<PushoverCancelRetriesResponse> CancelRetriesByTagAsync(PushoverMessageTag tag, CancellationToken cancellationToken = default);
 }
