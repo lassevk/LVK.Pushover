@@ -1,4 +1,7 @@
 ﻿<Solution>
+  <Folder Name="/@documents/">
+    <File Path="README.md" />
+  </Folder>
   <Folder Name="/sandboxes/">
     <Project Path="sandboxes\Pushover.Net.ConsoleSandbox\Pushover.Net.ConsoleSandbox.csproj" Type="Classic C#" />
   </Folder>
