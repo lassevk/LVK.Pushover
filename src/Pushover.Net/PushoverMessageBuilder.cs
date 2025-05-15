@@ -1,6 +1,8 @@
 // ReSharper disable MemberCanBePrivate.Global
 
+using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Threading.Channels;
 
 namespace Pushover.Net;
 
@@ -13,6 +15,12 @@ public partial class PushoverMessageBuilder
     private string? _title;
     private string? _url;
     private string? _urlTitle;
+    private string? _sound;
+    private PushoverMessagePriority _priority = PushoverMessagePriority.Default;
+    private TimeSpan _retryInterval;
+    private TimeSpan _expiresAfter;
+    private string? _callbackUrl;
+    private TimeSpan _ttl;
 
     [GeneratedRegex("^[a-zA-Z0-9]{30}$")]
     private partial Regex UserOrGroupKeyPattern();
@@ -70,13 +78,86 @@ public partial class PushoverMessageBuilder
         return this;
     }
 
+    public PushoverMessageBuilder WithSound(PushoverMessageSound sound)
+    {
+        _sound = sound.ToString().ToLowerInvariant();
+        return this;
+    }
+
+    public PushoverMessageBuilder WithCustomSound(string? sound)
+    {
+        _sound = sound;
+        return this;
+    }
+
+    public PushoverMessageBuilder WithLowestPriority() => WithPriority(PushoverMessagePriority.Lowest);
+    public PushoverMessageBuilder WithLowPriority() => WithPriority(PushoverMessagePriority.Low);
+    public PushoverMessageBuilder WithNormalPriority() => WithPriority(PushoverMessagePriority.Normal);
+    public PushoverMessageBuilder WithHighPriority() => WithPriority(PushoverMessagePriority.High);
+    public PushoverMessageBuilder WithEmergencyPriority(TimeSpan retryInterval, TimeSpan expiresAfter, string? callbackUrl = null) => WithPriority(PushoverMessagePriority.Emergency, retryInterval, expiresAfter, callbackUrl);
+
+    public PushoverMessageBuilder WithPriority(PushoverMessagePriority priority, TimeSpan retryInterval = default, TimeSpan expiresAfter = default, string? callbackUrl = null)
+    {
+        if (!Enum.IsDefined(priority))
+        {
+            throw new InvalidOperationException($"Invalid priority: {priority}.");
+        }
+
+        if (priority == PushoverMessagePriority.Emergency)
+        {
+            if (retryInterval == TimeSpan.Zero)
+            {
+                throw new InvalidOperationException("Retry interval is required for emergency priority.");
+            }
+            if (retryInterval < TimeSpan.FromSeconds(30))
+            {
+                throw new InvalidOperationException("Retry interval must be at least 30 seconds for emergency priority.");
+            }
+
+            if (expiresAfter == TimeSpan.Zero)
+            {
+                throw new InvalidOperationException("Expires after is required for emergency priority.");
+            }
+        }
+        else
+        {
+            if (retryInterval != TimeSpan.Zero)
+            {
+                throw new InvalidOperationException("Retry interval is not supported for non-emergency priority.");
+            }
+            if (expiresAfter != TimeSpan.Zero)
+            {
+                throw new InvalidOperationException("Expires after is not supported for non-emergency priority.");
+            }
+            if (callbackUrl is not null)
+            {
+                throw new InvalidOperationException("Callback URL is not supported for non-emergency priority.");
+            }
+        }
+
+        _priority = priority;
+        _retryInterval = retryInterval;
+        _expiresAfter = expiresAfter;
+        _callbackUrl = callbackUrl;
+        return this;
+    }
+
+    public PushoverMessageBuilder WithTimeToLive(TimeSpan ttl)
+    {
+        _ttl = ttl;
+        return this;
+    }
+
     // todo: attachment
     // todo: attachment_base64
     // todo: attachment_type
-    // todo: priority
-    // todo: sound
     // todo: timestamp
     // todo: ttl
+    // todo: recipts
+    // todo: get result from receipt
+    // todo: cancel retries
+    // todo: validate user or group keys
+    // todo: tags?
 
     public PushoverMessageBuilder WithTargetDevice(string deviceId) => WithTargetDevices(deviceId);
     public PushoverMessageBuilder WithTargetDevices(params ReadOnlySpan<string> deviceIds)
@@ -120,5 +201,12 @@ public partial class PushoverMessageBuilder
         builder.AddIfNotNullOrEmpty("device", string.Join(",", _deviceIds));
         builder.AddIfNotNullOrEmpty("url", _url);
         builder.AddIfNotNullOrEmpty("url_title", _urlTitle);
+        builder.AddIfNotNullOrEmpty("sound", _sound);
+        builder.AddIfNotNullOrEmpty("ttl", _ttl != TimeSpan.Zero ? ((int)_ttl.TotalSeconds).ToString() : null);
+
+        builder.AddIfNotNullOrEmpty("priority", _priority != PushoverMessagePriority.Default ? ((int)_priority).ToString() : null);;
+        builder.AddIfNotNullOrEmpty("retry", _priority == PushoverMessagePriority.Emergency ? ((int)_retryInterval.TotalSeconds).ToString() : null);
+        builder.AddIfNotNullOrEmpty("expire", _priority == PushoverMessagePriority.Emergency ? ((int)_expiresAfter.TotalSeconds).ToString() : null);
+        builder.AddIfNotNullOrEmpty("callback", _priority == PushoverMessagePriority.Emergency ? _callbackUrl : null);
     }
 }
