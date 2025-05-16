@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 
 namespace Pushover.Net;
 
+[ExcludeFromCodeCoverage]
 public class PushoverReceiptStatusResponse : PushoverResponse
 {
     [JsonPropertyName("acknowledged")]

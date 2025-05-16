@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -7,6 +8,7 @@ namespace Pushover.Net;
 
 [JsonObjectCreationHandling(JsonObjectCreationHandling.Populate)]
 [PublicAPI]
+[ExcludeFromCodeCoverage]
 public abstract class PushoverResponse
 {
     [JsonPropertyName("status")]
