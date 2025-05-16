@@ -179,6 +179,16 @@ public partial class PushoverMessageBuilder
 
     public PushoverMessageBuilder WithAttachment(string attachmentName, ReadOnlySpan<byte> attachment, string? mimeType = null)
     {
+        if (string.IsNullOrWhiteSpace(attachmentName))
+        {
+            throw new ArgumentException("Attachment name is required.", nameof(attachmentName));
+        }
+
+        if (attachment.Length == 0)
+        {
+            throw new ArgumentException("Attachment is required.", nameof(attachment));
+        }
+
         _attachment = attachment.ToArray();
         _attachmentName = attachmentName;
         _attachmentType = mimeType ?? MimeTypes.GetMimeType(attachmentName);
@@ -223,18 +233,6 @@ public partial class PushoverMessageBuilder
         {
             throw new InvalidOperationException("Message is required.");
         }
-
-        if (_attachment is not null && _attachment.Length > 0)
-        {
-            if (_attachmentName is null)
-            {
-                throw new InvalidOperationException("Attachment name is required when specifying an attachment.");
-            }
-            if (_attachmentType is null)
-            {
-                throw new InvalidOperationException("Attachment type is required when specifying an attachment.");
-            }
-        }
     }
 
     internal void ConfigureRequest(PushoverRequestBuilder builder)
@@ -255,9 +253,6 @@ public partial class PushoverMessageBuilder
             case PushoverMessageFormat.Html:
                 builder.AddIfNotNullOrEmpty("html", "1");
                 break;
-
-            default:
-                throw new ArgumentOutOfRangeException();
         }
 
         builder.AddIfNotNullOrEmpty("device", string.Join(",", _deviceIds));

@@ -561,6 +561,22 @@ public class PushoverMessageBuilderTests
                                         """));
     }
 
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase(" ")]
+    public void WithAttachment_NoAttachmentName_ThrowsArgumentException(string? attachmentName)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        Assert.Throws<ArgumentException>(() => messageBuilder.WithAttachment(attachmentName!, [1, 2, 3, 4]));
+    }
+
+    [Test]
+    public void WithAttachment_EmptyAttachment_ThrowsArgumentException()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        Assert.Throws<ArgumentException>(() => messageBuilder.WithAttachment("attachment.txt", []));
+    }
+
     [TestCase(".txt", "text/plain")]
     [TestCase(".jpg", "image/jpeg")]
     public async Task WithAttachment_BySpan_OutputsCorrectContent(string extension, string mimeType)
@@ -662,5 +678,68 @@ public class PushoverMessageBuilderTests
                                         {device}
                                         --abcdef--
                                         """));
+    }
+
+
+    [Test]
+    public async Task AddDefaultUserIfNeeded_WhenNoRecipientAdded_AddsDefaultUser()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.AddDefaultUserIfNeeded("111111111111111111111111111111");
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=user
+
+                                        111111111111111111111111111111
+                                        --abcdef--
+                                        """));
+    }
+
+    [Test]
+    public void Validate_MoreThan50Recipients_ThrowsInvalidOperationException()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithMessage("Some message");
+        for (int i = 0; i < 52; i++)
+        {
+            messageBuilder.WithRecipient(i.ToString().PadRight(30, '0'));
+        }
+
+        Assert.Throws<InvalidOperationException>(() => messageBuilder.Validate());
+    }
+
+    [Test]
+    public void Validate_50Recipients_DoesNotThrowInvalidOperationException()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithMessage("Some message");
+        for (int i = 0; i < 50; i++)
+        {
+            messageBuilder.WithRecipient(i.ToString().PadRight(30, '0'));
+        }
+
+        messageBuilder.Validate();
+    }
+
+    [Test]
+    public void Validate_NoRecipients_ThrowsInvalidOperationException()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithMessage("Some message");
+        Assert.Throws<InvalidOperationException>(() => messageBuilder.Validate());
+    }
+
+    [Test]
+    public void Validate_NoMessage_ThrowsInvalidOperationException()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithRecipient("000000000000000000000000000000");
+        Assert.Throws<InvalidOperationException>(() => messageBuilder.Validate());
     }
 }
