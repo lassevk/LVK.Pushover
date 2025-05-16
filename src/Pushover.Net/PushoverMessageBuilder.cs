@@ -342,7 +342,18 @@ public partial class PushoverMessageBuilder
         return this;
     }
 
+    /// <summary>
+    /// Targets a specific device to receive the notification.
+    /// </summary>
+    /// <param name="deviceId">The identifier of the device to which the notification will be sent.</param>
+    /// <returns>The current instance of <see cref="PushoverMessageBuilder"/> for method chaining.</returns>
     public PushoverMessageBuilder WithTargetDevice(string deviceId) => WithTargetDevices(deviceId);
+
+    /// <summary>
+    /// Specifies a list of target devices for the message.
+    /// </summary>
+    /// <param name="deviceIds">A collection of deviceIds representing the devices to which the message will be sent.</param>
+    /// <returns>The current instance of <see cref="PushoverMessageBuilder"/> for method chaining.</returns>
     public PushoverMessageBuilder WithTargetDevices(params ReadOnlySpan<string> deviceIds)
     {
         _deviceIds.AddRange(deviceIds);
