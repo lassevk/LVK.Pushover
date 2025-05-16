@@ -47,9 +47,9 @@ public partial class PushoverMessageBuilder
 
     public PushoverMessageBuilder WithMessage(string? message, PushoverMessageFormat format = PushoverMessageFormat.Default)
     {
-        if (!Enum.IsDefined(_messageFormat))
+        if (!Enum.IsDefined(format))
         {
-            throw new InvalidOperationException($"Invalid message format: {_messageFormat}.");
+            throw new ArgumentOutOfRangeException(nameof(format), $"Invalid message format: {format}.");
         }
 
         _message = ValidationHelper.ValidateMessage(message);

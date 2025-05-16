@@ -26,9 +26,9 @@ internal class PushoverRequestBuilder
         }
     }
 
-    public void AddAttachment(byte[] attachment, string attachmentName, string attachmentType)
+    public void AddAttachment(ReadOnlySpan<byte> attachment, string attachmentName, string attachmentType)
     {
-        var childContent = new ByteArrayContent(attachment);
+        var childContent = new ByteArrayContent(attachment.ToArray());
         childContent.Headers.ContentType = new MediaTypeHeaderValue(attachmentType);
         _content.Add(childContent, "attachment", attachmentName);
     }
