@@ -472,6 +472,23 @@ public class PushoverMessageBuilderTests
     }
 
     [Test]
+    public async Task WithTimeToLive_ZeroTtl_IsNotAddedToContent()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithTimeToLive(TimeSpan.Zero);
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+
+                                        --abcdef--
+                                        """));
+    }
+
+    [Test]
     public async Task WithTimestamp_OutputsCorrectContent()
     {
         var messageBuilder = new PushoverMessageBuilder();
