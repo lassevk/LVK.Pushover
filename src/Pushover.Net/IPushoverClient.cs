@@ -25,7 +25,7 @@ public interface IPushoverClient
     /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="configureMessage"/> is <c>null</c>.
     /// </exception>
-    Task<PushoverSendMessageResponse> SendMessageAsync(Action<PushoverMessageBuilder> configureMessage, CancellationToken cancellationToken);
+    Task<PushoverSendMessageResponse> SendMessageAsync(Action<PushoverMessageBuilder> configureMessage, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Asynchronously sends a message to the specified recipient using the Pushover API.
@@ -46,7 +46,7 @@ public interface IPushoverClient
     /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="recipientUserOrGroupKey"/> or <paramref name="message"/> is <c>null</c>.
     /// </exception>
-    Task<PushoverSendMessageResponse> SendMessageAsync(string recipientUserOrGroupKey, string message, CancellationToken cancellationToken)
+    Task<PushoverSendMessageResponse> SendMessageAsync(string recipientUserOrGroupKey, string message, CancellationToken cancellationToken = default)
         => SendMessageAsync(messageBuilder => messageBuilder.WithMessage(message).WithRecipient(recipientUserOrGroupKey), cancellationToken);
 
     /// <summary>
@@ -65,7 +65,8 @@ public interface IPushoverClient
     /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="message"/> is <c>null</c>.
     /// </exception>
-    Task<PushoverSendMessageResponse> SendMessageAsync(string message, CancellationToken cancellationToken) => SendMessageAsync(messageBuilder => messageBuilder.WithMessage(message), cancellationToken);
+    Task<PushoverSendMessageResponse> SendMessageAsync(string message, CancellationToken cancellationToken = default)
+        => SendMessageAsync(messageBuilder => messageBuilder.WithMessage(message), cancellationToken);
 
     /// <summary>
     /// Asynchronously validates a user's or group's key using the Pushover API.
