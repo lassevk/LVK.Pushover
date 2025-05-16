@@ -6,6 +6,7 @@
   </Folder>
   <Folder Name="/@documents/">
     <File Path="README.md" />
+    <File Path="LICENSE.md" />
   </Folder>
   <Folder Name="/@github/">
     <File Path=".github\workflows\build.yml" />
