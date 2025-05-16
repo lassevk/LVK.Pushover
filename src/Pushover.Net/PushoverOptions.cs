@@ -11,14 +11,14 @@ public class PushoverOptions
 
     public PushoverOptions WithApiToken(string apiToken)
     {
-        ValidationHelper.ValidateApiToken(apiToken);
+        PushoverValidationHelper.ValidateApiToken(apiToken);
         ApiToken = apiToken;
         return this;
     }
 
     public PushoverOptions WithDefaultUser(string userKey)
     {
-        ValidationHelper.ValidateUserOrGroupKey(userKey);
+        PushoverValidationHelper.ValidateUserOrGroupKey(userKey);
         DefaultUserKey = userKey;
         return this;
     }

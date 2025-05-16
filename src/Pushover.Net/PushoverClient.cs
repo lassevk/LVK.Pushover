@@ -25,7 +25,7 @@ internal class PushoverClient : IPushoverClient
 
     public async Task<PushoverUserValidationResponse> ValidateUserOrGroupAsync(string userKey, string? deviceId = null, CancellationToken cancellationToken = default)
     {
-        if (ValidationHelper.ValidateUserOrGroupKey(userKey) == null)
+        if (PushoverValidationHelper.ValidateUserOrGroupKey(userKey) == null)
         {
             throw new ArgumentException("User or group key is invalid.", nameof(userKey));
         }

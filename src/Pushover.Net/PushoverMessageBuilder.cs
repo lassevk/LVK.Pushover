@@ -35,7 +35,7 @@ public partial class PushoverMessageBuilder
     {
         foreach (string userOrGroupKey in userOrGroupKeys)
         {
-            string? key = ValidationHelper.ValidateUserOrGroupKey(userOrGroupKey);
+            string? key = PushoverValidationHelper.ValidateUserOrGroupKey(userOrGroupKey);
             if (key is not null)
             {
                 _recipientKeys.Add(userOrGroupKey);
@@ -52,33 +52,33 @@ public partial class PushoverMessageBuilder
             throw new ArgumentOutOfRangeException(nameof(format), $"Invalid message format: {format}.");
         }
 
-        _message = ValidationHelper.ValidateMessage(message);
+        _message = PushoverValidationHelper.ValidateMessage(message);
         _messageFormat = format;
         return this;
     }
 
     public PushoverMessageBuilder WithTitle(string? title)
     {
-        _title = ValidationHelper.ValidateTitle(title);
+        _title = PushoverValidationHelper.ValidateTitle(title);
         return this;
     }
 
     public PushoverMessageBuilder WithUrl(string? url)
     {
-        _url = ValidationHelper.ValidateUrl(url);
+        _url = PushoverValidationHelper.ValidateUrl(url);
         return this;
     }
 
     public PushoverMessageBuilder WithUrlTitle(string? title)
     {
-        _urlTitle = ValidationHelper.ValidateUrlTitle(title);
+        _urlTitle = PushoverValidationHelper.ValidateUrlTitle(title);
         return this;
     }
 
     public PushoverMessageBuilder WithUrlWithTitle(string? url, string? title)
     {
-        _url = ValidationHelper.ValidateUrl(url);
-        _urlTitle = ValidationHelper.ValidateUrlTitle(title);
+        _url = PushoverValidationHelper.ValidateUrl(url);
+        _urlTitle = PushoverValidationHelper.ValidateUrlTitle(title);
         return this;
     }
 

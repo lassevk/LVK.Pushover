@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Pushover.Net;
 
-internal static partial class ValidationHelper
+internal static partial class PushoverValidationHelper
 {
     [GeneratedRegex("^[a-zA-Z0-9]{30}$")]
     private static partial Regex KeyOrApiTokenPattern();
