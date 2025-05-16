@@ -76,7 +76,7 @@ public class PushoverClientTests
     }
 
     [Test]
-    public void ValidateUserOrGroupAsync_WithMissing_ThrowsArgumentException()
+    public void ValidateUserOrGroupAsync_WithMissingKey_ThrowsArgumentException()
     {
         HttpMessageHandler? handler = Substitute.For<HttpMessageHandler>();
 
@@ -88,5 +88,23 @@ public class PushoverClientTests
         var client = new PushoverClient(Options.Create(options), httpClientFactory);
 
         Assert.ThrowsAsync<ArgumentException>(async () => await client.ValidateUserOrGroupAsync("", "iphone", CancellationToken.None));
+    }
+
+    [Test]
+    public async Task GetReceiptStatusAsync_WithOkResponse_ReturnsExpectedResults()
+    {
+        var testHandler = new TestHttpMessageHandler();
+        testHandler.Returns(HttpStatusCode.OK, "{\"status\":1,\"request\":\"257D9399-AB64-4F4F-BF5E-CE9175553A1D\"}");
+
+        IHttpClientFactory? httpClientFactory = Substitute.For<IHttpClientFactory>();
+        var httpClient = new HttpClient(testHandler);
+        httpClientFactory.CreateClient().Returns(httpClient);
+
+        PushoverOptions options = new PushoverOptions().WithApiToken("apiToken0000000000000000000000").WithDefaultUser("defaultUser0000000000000000000");
+        var client = new PushoverClient(Options.Create(options), httpClientFactory);
+
+        PushoverReceiptStatusResponse response = await client.GetReceiptStatusAsync("receipt00000000000000000000000", CancellationToken.None);
+        Assert.That(response.Status, Is.EqualTo(PushoverResponseStatus.Success));
+        Assert.That(response.Request, Is.EqualTo(Guid.Parse("257D9399-AB64-4F4F-BF5E-CE9175553A1D")));
     }
 }
