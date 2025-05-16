@@ -182,4 +182,40 @@ public class PushoverClientTests
 
         Assert.ThrowsAsync<ArgumentException>(async () => await client.CancelRetriesByTagAsync(new(key!, value!), CancellationToken.None));
     }
+
+    [Test]
+    public async Task SendMessageAsyncThroughInterface_WithOkResponse_ReturnsExpectedResults()
+    {
+        var testHandler = new TestHttpMessageHandler();
+        testHandler.Returns(HttpStatusCode.OK, "{\"status\":1,\"request\":\"257D9399-AB64-4F4F-BF5E-CE9175553A1D\"}");
+
+        IHttpClientFactory? httpClientFactory = Substitute.For<IHttpClientFactory>();
+        var httpClient = new HttpClient(testHandler);
+        httpClientFactory.CreateClient().Returns(httpClient);
+
+        PushoverOptions options = new PushoverOptions().WithApiToken("apiToken0000000000000000000000").WithDefaultUser("defaultUser0000000000000000000");
+        IPushoverClient client = new PushoverClient(Options.Create(options), httpClientFactory);
+
+        PushoverSendMessageResponse response = await client.SendMessageAsync("Hello world!", CancellationToken.None);
+        Assert.That(response.Status, Is.EqualTo(PushoverResponseStatus.Success));
+        Assert.That(response.Request, Is.EqualTo(Guid.Parse("257D9399-AB64-4F4F-BF5E-CE9175553A1D")));
+    }
+
+    [Test]
+    public async Task SendMessageAsyncThroughInterfaceWithUserKey_WithOkResponse_ReturnsExpectedResults()
+    {
+        var testHandler = new TestHttpMessageHandler();
+        testHandler.Returns(HttpStatusCode.OK, "{\"status\":1,\"request\":\"257D9399-AB64-4F4F-BF5E-CE9175553A1D\"}");
+
+        IHttpClientFactory? httpClientFactory = Substitute.For<IHttpClientFactory>();
+        var httpClient = new HttpClient(testHandler);
+        httpClientFactory.CreateClient().Returns(httpClient);
+
+        PushoverOptions options = new PushoverOptions().WithApiToken("apiToken0000000000000000000000").WithDefaultUser("defaultUser0000000000000000000");
+        IPushoverClient client = new PushoverClient(Options.Create(options), httpClientFactory);
+
+        PushoverSendMessageResponse response = await client.SendMessageAsync("000000000011111111112222222222", "Hello world!", CancellationToken.None);
+        Assert.That(response.Status, Is.EqualTo(PushoverResponseStatus.Success));
+        Assert.That(response.Request, Is.EqualTo(Guid.Parse("257D9399-AB64-4F4F-BF5E-CE9175553A1D")));
+    }
 }
