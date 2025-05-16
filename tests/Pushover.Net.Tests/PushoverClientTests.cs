@@ -107,4 +107,40 @@ public class PushoverClientTests
         Assert.That(response.Status, Is.EqualTo(PushoverResponseStatus.Success));
         Assert.That(response.Request, Is.EqualTo(Guid.Parse("257D9399-AB64-4F4F-BF5E-CE9175553A1D")));
     }
+
+    [Test]
+    public async Task CancelRetriesAsync_WithOkResponse_ReturnsExpectedResults()
+    {
+        var testHandler = new TestHttpMessageHandler();
+        testHandler.Returns(HttpStatusCode.OK, "{\"status\":1,\"request\":\"257D9399-AB64-4F4F-BF5E-CE9175553A1D\"}");
+
+        IHttpClientFactory? httpClientFactory = Substitute.For<IHttpClientFactory>();
+        var httpClient = new HttpClient(testHandler);
+        httpClientFactory.CreateClient().Returns(httpClient);
+
+        PushoverOptions options = new PushoverOptions().WithApiToken("apiToken0000000000000000000000").WithDefaultUser("defaultUser0000000000000000000");
+        var client = new PushoverClient(Options.Create(options), httpClientFactory);
+
+        PushoverCancelRetriesResponse response = await client.CancelRetriesAsync("000000000000000000000000000000", CancellationToken.None);
+        Assert.That(response.Status, Is.EqualTo(PushoverResponseStatus.Success));
+        Assert.That(response.Request, Is.EqualTo(Guid.Parse("257D9399-AB64-4F4F-BF5E-CE9175553A1D")));
+    }
+
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase(" ")]
+    public void CancelRetriesAsync_InvalidReceiptId_ThrowsArgumentNullException(string? receiptId)
+    {
+        var testHandler = new TestHttpMessageHandler();
+        testHandler.Returns(HttpStatusCode.OK, "{\"status\":1,\"request\":\"257D9399-AB64-4F4F-BF5E-CE9175553A1D\"}");
+
+        IHttpClientFactory? httpClientFactory = Substitute.For<IHttpClientFactory>();
+        var httpClient = new HttpClient(testHandler);
+        httpClientFactory.CreateClient().Returns(httpClient);
+
+        PushoverOptions options = new PushoverOptions().WithApiToken("apiToken0000000000000000000000").WithDefaultUser("defaultUser0000000000000000000");
+        var client = new PushoverClient(Options.Create(options), httpClientFactory);
+
+        Assert.ThrowsAsync<ArgumentNullException>(async () => await client.CancelRetriesAsync(receiptId!, CancellationToken.None));
+    }
 }
