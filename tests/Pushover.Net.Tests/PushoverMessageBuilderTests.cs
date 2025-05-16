@@ -622,4 +622,45 @@ public class PushoverMessageBuilderTests
                                        --abcdef--
                                        """));
     }
+
+    [Test]
+    public async Task WithTargetDevices_OutputsCorrectContent()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithTargetDevices("iphone", "desktop");
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo("""
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=device
+
+                                       iphone,desktop
+                                       --abcdef--
+                                       """));
+    }
+
+    [TestCase("iphone")]
+    [TestCase("desktop")]
+    public async Task WithTargetDevice_OutputsCorrectContent(string device)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithTargetDevice(device);
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=device
+
+                                        {device}
+                                        --abcdef--
+                                        """));
+    }
 }
