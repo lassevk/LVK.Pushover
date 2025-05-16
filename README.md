@@ -12,7 +12,7 @@ push notification service to .NET.
 Install the [LVK.Pushover](https://www.nuget.org/packages/LVK.Pushover) package using your
 favorite nuget package tool, or the command line:
 
-    dotnet nuget install LVK.Pushover
+    dotnet add package LVK.Pushover
 
 ## Configuration
 
