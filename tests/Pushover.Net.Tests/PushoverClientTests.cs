@@ -9,6 +9,18 @@ namespace Pushover.Net.Tests;
 public class PushoverClientTests
 {
     [Test]
+    public void Constructor_NullOptions_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() => _ = new PushoverClient(null!, Substitute.For<IHttpClientFactory>()));
+    }
+
+    [Test]
+    public void Constructor_NullHttpClientFactory_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() => _ = new PushoverClient(Options.Create(new PushoverOptions()), null!));
+    }
+
+    [Test]
     public async Task SendMessageAsync_WithOkResponse_ReturnsExpectedResults()
     {
         var testHandler = new TestHttpMessageHandler();
