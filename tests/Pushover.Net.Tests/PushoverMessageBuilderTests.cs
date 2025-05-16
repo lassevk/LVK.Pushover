@@ -1,5 +1,3 @@
-using System.Globalization;
-
 namespace Pushover.Net.Tests;
 
 public class PushoverMessageBuilderTests
@@ -23,19 +21,19 @@ public class PushoverMessageBuilderTests
         messageBuilder.ConfigureRequest(requestBuilder);
 
         string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
-        Assert.That(output, Is.EqualTo($"""
-                                        --abcdef
-                                        Content-Type: text/plain; charset=utf-8
-                                        Content-Disposition: form-data; name=message
+        Assert.That(output, Is.EqualTo("""
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=message
 
-                                        TEST
-                                        --abcdef
-                                        Content-Type: text/plain; charset=utf-8
-                                        Content-Disposition: form-data; name=html
+                                       TEST
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=html
 
-                                        1
-                                        --abcdef--
-                                        """));
+                                       1
+                                       --abcdef--
+                                       """));
     }
 
     [Test]
@@ -48,19 +46,19 @@ public class PushoverMessageBuilderTests
         messageBuilder.ConfigureRequest(requestBuilder);
 
         string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
-        Assert.That(output, Is.EqualTo($"""
-                                        --abcdef
-                                        Content-Type: text/plain; charset=utf-8
-                                        Content-Disposition: form-data; name=message
+        Assert.That(output, Is.EqualTo("""
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=message
 
-                                        TEST
-                                        --abcdef
-                                        Content-Type: text/plain; charset=utf-8
-                                        Content-Disposition: form-data; name=monospace
+                                       TEST
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=monospace
 
-                                        1
-                                        --abcdef--
-                                        """));
+                                       1
+                                       --abcdef--
+                                       """));
     }
 
     [Test]
@@ -73,14 +71,14 @@ public class PushoverMessageBuilderTests
         messageBuilder.ConfigureRequest(requestBuilder);
 
         string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
-        Assert.That(output, Is.EqualTo($"""
-                                        --abcdef
-                                        Content-Type: text/plain; charset=utf-8
-                                        Content-Disposition: form-data; name=message
+        Assert.That(output, Is.EqualTo("""
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=message
 
-                                        TEST
-                                        --abcdef--
-                                        """));
+                                       TEST
+                                       --abcdef--
+                                       """));
     }
 
     [Test]
@@ -121,14 +119,14 @@ public class PushoverMessageBuilderTests
         messageBuilder.ConfigureRequest(requestBuilder);
 
         string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
-        Assert.That(output, Is.EqualTo($"""
-                                        --abcdef
-                                        Content-Type: text/plain; charset=utf-8
-                                        Content-Disposition: form-data; name=user
+        Assert.That(output, Is.EqualTo("""
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=user
 
-                                        000000000000000000000000000000,012345678901234567890123456789
-                                        --abcdef--
-                                        """));
+                                       000000000000000000000000000000,012345678901234567890123456789
+                                       --abcdef--
+                                       """));
     }
 
     [Test]
@@ -141,14 +139,14 @@ public class PushoverMessageBuilderTests
         messageBuilder.ConfigureRequest(requestBuilder);
 
         string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
-        Assert.That(output, Is.EqualTo($"""
-                                        --abcdef
-                                        Content-Type: text/plain; charset=utf-8
-                                        Content-Disposition: form-data; name=user
+        Assert.That(output, Is.EqualTo("""
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=user
 
-                                        000000000000000000000000000000
-                                        --abcdef--
-                                        """));
+                                       000000000000000000000000000000
+                                       --abcdef--
+                                       """));
     }
 
     [TestCase("This is a title")]
@@ -292,14 +290,14 @@ public class PushoverMessageBuilderTests
         messageBuilder.ConfigureRequest(requestBuilder);
 
         string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
-        Assert.That(output, Is.EqualTo($"""
-                                        --abcdef
-                                        Content-Type: text/plain; charset=utf-8
-                                        Content-Disposition: form-data; name=priority
+        Assert.That(output, Is.EqualTo("""
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=priority
 
-                                        -2
-                                        --abcdef--
-                                        """));
+                                       -2
+                                       --abcdef--
+                                       """));
     }
 
     [Test]
@@ -312,14 +310,14 @@ public class PushoverMessageBuilderTests
         messageBuilder.ConfigureRequest(requestBuilder);
 
         string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
-        Assert.That(output, Is.EqualTo($"""
-                                        --abcdef
-                                        Content-Type: text/plain; charset=utf-8
-                                        Content-Disposition: form-data; name=priority
+        Assert.That(output, Is.EqualTo("""
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=priority
 
-                                        -1
-                                        --abcdef--
-                                        """));
+                                       -1
+                                       --abcdef--
+                                       """));
     }
 
     [Test]
@@ -332,11 +330,11 @@ public class PushoverMessageBuilderTests
         messageBuilder.ConfigureRequest(requestBuilder);
 
         string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
-        Assert.That(output, Is.EqualTo($"""
-                                        --abcdef
+        Assert.That(output, Is.EqualTo("""
+                                       --abcdef
 
-                                        --abcdef--
-                                        """));
+                                       --abcdef--
+                                       """));
     }
 
     [Test]
@@ -349,14 +347,14 @@ public class PushoverMessageBuilderTests
         messageBuilder.ConfigureRequest(requestBuilder);
 
         string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
-        Assert.That(output, Is.EqualTo($"""
-                                        --abcdef
-                                        Content-Type: text/plain; charset=utf-8
-                                        Content-Disposition: form-data; name=priority
+        Assert.That(output, Is.EqualTo("""
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=priority
 
-                                        1
-                                        --abcdef--
-                                        """));
+                                       1
+                                       --abcdef--
+                                       """));
     }
 
     [Test]
@@ -369,29 +367,29 @@ public class PushoverMessageBuilderTests
         messageBuilder.ConfigureRequest(requestBuilder);
 
         string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
-        Assert.That(output, Is.EqualTo($"""
-                                        --abcdef
-                                        Content-Type: text/plain; charset=utf-8
-                                        Content-Disposition: form-data; name=priority
+        Assert.That(output, Is.EqualTo("""
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=priority
 
-                                        2
-                                        --abcdef
-                                        Content-Type: text/plain; charset=utf-8
-                                        Content-Disposition: form-data; name=retry
+                                       2
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=retry
 
-                                        30
-                                        --abcdef
-                                        Content-Type: text/plain; charset=utf-8
-                                        Content-Disposition: form-data; name=expire
+                                       30
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=expire
 
-                                        600
-                                        --abcdef
-                                        Content-Type: text/plain; charset=utf-8
-                                        Content-Disposition: form-data; name=callback
+                                       600
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=callback
 
-                                        https://callback
-                                        --abcdef--
-                                        """));
+                                       https://callback
+                                       --abcdef--
+                                       """));
     }
 
     [Test]
@@ -582,5 +580,46 @@ public class PushoverMessageBuilderTests
                                         {"\u0001\u0002\u0003\u0004"}
                                         --abcdef--
                                         """));
+    }
+
+    [TestCase("a", "abc")]
+    [TestCase("someTag", "someValue")]
+    public async Task WithTag_OutputsCorrectContent(string key, string value)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithTag(key, value);
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=tags
+
+                                       {key}={value}
+                                       --abcdef--
+                                       """));
+    }
+
+    [Test]
+    public async Task WithTags_OutputsCorrectContent()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithTags(new("k", "1"), new("a", "abc"));
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo("""
+                                       --abcdef
+                                       Content-Type: text/plain; charset=utf-8
+                                       Content-Disposition: form-data; name=tags
+
+                                       k=1,a=abc
+                                       --abcdef--
+                                       """));
     }
 }
