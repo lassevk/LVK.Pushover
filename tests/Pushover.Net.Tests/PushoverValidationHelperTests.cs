@@ -98,7 +98,7 @@ public class PushoverValidationHelperTests
     public void ValidateUrl_UrlLongerThan256Characters_ThrowsInvalidOperationException()
     {
         string title = new string('a', 257);
-        Assert.Throws<InvalidOperationException>(() => PushoverValidationHelper.ValidateUrlTitle(title));
+        Assert.Throws<InvalidOperationException>(() => PushoverValidationHelper.ValidateUrl(title));
     }
 
     [TestCase(null, null)]
