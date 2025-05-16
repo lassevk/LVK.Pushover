@@ -1,13 +1,10 @@
 using System.Text.RegularExpressions;
 
-using JetBrains.Annotations;
-
 namespace LVK.Pushover;
 
 /// <summary>
 /// Represents a builder for constructing Pushover messages with customizable parameters.
 /// </summary>
-[PublicAPI]
 public partial class PushoverMessageBuilder
 {
     private readonly List<string> _recipientKeys = [];

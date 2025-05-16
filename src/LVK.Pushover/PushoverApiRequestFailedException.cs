@@ -1,7 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 
-using JetBrains.Annotations;
-
 namespace LVK.Pushover;
 
 /// <summary>
@@ -11,7 +9,6 @@ namespace LVK.Pushover;
 /// This exception encapsulates the errors returned by the Pushover API and provides additional context
 /// related to the failure of the request. Errors can be accessed via the <see cref="Errors"/> property.
 /// </remarks>
-[PublicAPI]
 [ExcludeFromCodeCoverage]
 public class PushoverApiRequestFailedException : InvalidOperationException
 {

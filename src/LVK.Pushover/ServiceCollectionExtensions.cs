@@ -1,7 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 
-using JetBrains.Annotations;
-
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LVK.Pushover;
@@ -9,7 +7,6 @@ namespace LVK.Pushover;
 /// <summary>
 /// Extension methods for the <see cref="IServiceCollection"/> for registering and configuring the <see cref="IPushoverClient"/>.
 /// </summary>
-[PublicAPI]
 [ExcludeFromCodeCoverage]
 public static class ServiceCollectionExtensions
 {

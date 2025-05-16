@@ -1,11 +1,8 @@
-using JetBrains.Annotations;
-
 namespace LVK.Pushover;
 
 /// <summary>
 /// Represents a client for interacting with the Pushover API to send messages, validate users, retrieve receipt statuses, and manage message retries.
 /// </summary>
-[PublicAPI]
 public interface IPushoverClient
 {
     /// <summary>

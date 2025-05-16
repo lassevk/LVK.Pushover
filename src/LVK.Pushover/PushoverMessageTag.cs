@@ -1,7 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 
-using JetBrains.Annotations;
-
 namespace LVK.Pushover;
 
 /// <summary>
@@ -11,7 +9,6 @@ namespace LVK.Pushover;
 /// The <c>PushoverMessageTag</c> can be used to define metadata or additional parameters for Pushover messages
 /// that are typically passed to APIs or builders when constructing a message.
 /// </remarks>
-[PublicAPI]
 [ExcludeFromCodeCoverage]
 public readonly record struct PushoverMessageTag(string Key, string Value)
 {

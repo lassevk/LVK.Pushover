@@ -1,8 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
-using JetBrains.Annotations;
-
 namespace LVK.Pushover;
 
 /// <summary>
@@ -15,7 +13,6 @@ namespace LVK.Pushover;
 /// status, request identifier, and any additional errors or metadata.
 /// </remarks>
 [JsonObjectCreationHandling(JsonObjectCreationHandling.Populate)]
-[PublicAPI]
 [ExcludeFromCodeCoverage]
 public abstract class PushoverResponse
 {

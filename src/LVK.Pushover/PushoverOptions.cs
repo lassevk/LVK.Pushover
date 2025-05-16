@@ -1,5 +1,3 @@
-using JetBrains.Annotations;
-
 namespace LVK.Pushover;
 
 /// <summary>
@@ -9,7 +7,6 @@ namespace LVK.Pushover;
 /// This class is used to configure and validate the necessary settings for interacting with the Pushover API.
 /// It provides methods to set the API token and the default user key.
 /// </remarks>
-[PublicAPI]
 public class PushoverOptions
 {
     /// <summary>
