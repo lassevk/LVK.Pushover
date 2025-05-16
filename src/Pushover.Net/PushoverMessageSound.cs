@@ -1,5 +1,10 @@
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 namespace Pushover.Net;
 
+/// <summary>
+/// Represents the available notification sounds for a Pushover message.
+/// </summary>
 public enum PushoverMessageSound
 {
     Pushover,
