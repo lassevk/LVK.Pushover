@@ -50,6 +50,17 @@ public class PushoverValidationHelperTests
         Assert.Throws<InvalidOperationException>(() => PushoverValidationHelper.ValidateTitle(title));
     }
 
+    [TestCase(null, null)]
+    [TestCase("", null)]
+    [TestCase("000000000000000000000000000000", "000000000000000000000000000000")]
+    [TestCase("111111111111111111111111111111", "111111111111111111111111111111")]
+    public void ValidateUserOrGroupKey_WithTestCases_ReturnsExpectedResults(string? input, string? expected)
+    {
+        string? output = PushoverValidationHelper.ValidateUserOrGroupKey(input);
+
+        Assert.That(output, Is.EqualTo(expected));
+    }
+
     [TestCase("000000000000000000000000000000", "000000000000000000000000000000")]
     [TestCase("012345678901234567890123456789", "012345678901234567890123456789")]
     public void ValidateUserOrGroupKey_WithOkTestCases_ReturnsExpectedResults(string input, string expected)
@@ -64,6 +75,30 @@ public class PushoverValidationHelperTests
     public void ValidateUserOrGroupKey_WithInvalidTestCases_ThrowsInvalidOperationException(string input)
     {
         Assert.Throws<InvalidOperationException>(() => PushoverValidationHelper.ValidateUserOrGroupKey(input));
+    }
+
+    [TestCase(null, null)]
+    [TestCase("", null)]
+    [TestCase("https://google.com", "https://google.com")]
+    public void ValidateUrl_WithTestCases_ReturnsExpectedResults(string? input, string? expected)
+    {
+        string? output = PushoverValidationHelper.ValidateUrl(input);
+
+        Assert.That(output, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void ValidateUrl_UrlWithLengthOf256Characters_DoesNotThrowInvalidOperationException()
+    {
+        string title = new string('a', 256);
+        PushoverValidationHelper.ValidateUrl(title);
+    }
+
+    [Test]
+    public void ValidateUrl_UrlLongerThan256Characters_ThrowsInvalidOperationException()
+    {
+        string title = new string('a', 257);
+        Assert.Throws<InvalidOperationException>(() => PushoverValidationHelper.ValidateUrlTitle(title));
     }
 
     [TestCase(null, null)]
@@ -88,5 +123,31 @@ public class PushoverValidationHelperTests
     {
         string title = new string('a', 251);
         Assert.Throws<InvalidOperationException>(() => PushoverValidationHelper.ValidateUrlTitle(title));
+    }
+
+    [TestCase(null, null)]
+    [TestCase("", null)]
+    [TestCase("000000000000000000000000000000", "000000000000000000000000000000")]
+    public void ValidateMessage_ValidateApiToken_ReturnsExpectedResults(string? input, string? expected)
+    {
+        string? output = PushoverValidationHelper.ValidateApiToken(input);
+
+        Assert.That(output, Is.EqualTo(expected));
+    }
+
+    [TestCase("000000000000000000000000000000", "000000000000000000000000000000")]
+    [TestCase("012345678901234567890123456789", "012345678901234567890123456789")]
+    public void ValidateApiToken_WithOkTestCases_ReturnsExpectedResults(string input, string expected)
+    {
+        string? output = PushoverValidationHelper.ValidateApiToken(input);
+        Assert.That(output, Is.EqualTo(expected));
+    }
+
+    [TestCase("00000000000000000000000000000", TestName="Less than 30 characters")]
+    [TestCase("0123456789012345678901234567891", TestName="More than 30 characters")]
+    [TestCase("01234567890123456789012345678_", TestName="Invalid character")]
+    public void ValidateApiToken_WithInvalidTestCases_ThrowsInvalidOperationException(string input)
+    {
+        Assert.Throws<InvalidOperationException>(() => PushoverValidationHelper.ValidateApiToken(input));
     }
 }
