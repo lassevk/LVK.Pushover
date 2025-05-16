@@ -39,7 +39,8 @@ notifications, here is an example:
         public async Task SomeMethod()
         {
             await _pushoverClient.SendMessageAsync(msg => msg
-                .SendMessageAsync("Hello from your application")
+                .WithMessage("Hello from your application")
+                .WithTitle("Well hello there!")
                 .WithRecipient("your-unique-user-key"));
         }
     }
