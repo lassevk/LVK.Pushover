@@ -41,25 +41,52 @@ public class PushoverClientTests
 
         Assert.ThrowsAsync<PushoverApiRequestFailedException>(async () => await client.SendMessageAsync(msg => msg.WithMessage("Hello world!"), CancellationToken.None));
     }
-}
 
-public class TestHttpMessageHandler : HttpMessageHandler
-{
-    private HttpStatusCode _statusCode = HttpStatusCode.OK;
-    private HttpContent? _responseContent;
-
-    public void Returns(HttpStatusCode statusCode, string json)
+    [Test]
+    public async Task ValidateUserOrGroupAsync_WithOkResponse_ReturnsExpectedResults()
     {
-        _statusCode = statusCode;
-        _responseContent = new StringContent(json);
+        var testHandler = new TestHttpMessageHandler();
+        testHandler.Returns(HttpStatusCode.OK, "{\"status\":1,\"request\":\"257D9399-AB64-4F4F-BF5E-CE9175553A1D\"}");
+
+        IHttpClientFactory? httpClientFactory = Substitute.For<IHttpClientFactory>();
+        var httpClient = new HttpClient(testHandler);
+        httpClientFactory.CreateClient().Returns(httpClient);
+
+        PushoverOptions options = new PushoverOptions().WithApiToken("apiToken0000000000000000000000").WithDefaultUser("defaultUser0000000000000000000");
+        var client = new PushoverClient(Options.Create(options), httpClientFactory);
+
+        PushoverUserValidationResponse response = await client.ValidateUserOrGroupAsync("userKey00000000000000000000000", "iphone", CancellationToken.None);
+        Assert.That(response.Status, Is.EqualTo(PushoverResponseStatus.Success));
+        Assert.That(response.Request, Is.EqualTo(Guid.Parse("257D9399-AB64-4F4F-BF5E-CE9175553A1D")));
     }
 
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    [Test]
+    public void ValidateUserOrGroupAsync_WithInvalidKey_ThrowsInvalidOperationException()
     {
-        await Task.Yield();
-        return new HttpResponseMessage(_statusCode)
-        {
-            Content = _responseContent
-        };
+        HttpMessageHandler? handler = Substitute.For<HttpMessageHandler>();
+
+        IHttpClientFactory? httpClientFactory = Substitute.For<IHttpClientFactory>();
+        var httpClient = new HttpClient(handler);
+        httpClientFactory.CreateClient().Returns(httpClient);
+
+        PushoverOptions options = new PushoverOptions().WithApiToken("apiToken0000000000000000000000").WithDefaultUser("defaultUser0000000000000000000");
+        var client = new PushoverClient(Options.Create(options), httpClientFactory);
+
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await client.ValidateUserOrGroupAsync("userKey000000000000000000000_", "iphone", CancellationToken.None));
+    }
+
+    [Test]
+    public void ValidateUserOrGroupAsync_WithMissing_ThrowsArgumentException()
+    {
+        HttpMessageHandler? handler = Substitute.For<HttpMessageHandler>();
+
+        IHttpClientFactory? httpClientFactory = Substitute.For<IHttpClientFactory>();
+        var httpClient = new HttpClient(handler);
+        httpClientFactory.CreateClient().Returns(httpClient);
+
+        PushoverOptions options = new PushoverOptions().WithApiToken("apiToken0000000000000000000000").WithDefaultUser("defaultUser0000000000000000000");
+        var client = new PushoverClient(Options.Create(options), httpClientFactory);
+
+        Assert.ThrowsAsync<ArgumentException>(async () => await client.ValidateUserOrGroupAsync("", "iphone", CancellationToken.None));
     }
 }
