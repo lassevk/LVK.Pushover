@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 using JetBrains.Annotations;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +10,7 @@ namespace Pushover.Net;
 /// Extension methods for the <see cref="IServiceCollection"/> for registering and configuring the <see cref="IPushoverClient"/>.
 /// </summary>
 [PublicAPI]
+[ExcludeFromCodeCoverage]
 public static class ServiceCollectionExtensions
 {
     /// <summary>
