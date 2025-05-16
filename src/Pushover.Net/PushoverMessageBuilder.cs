@@ -1,12 +1,10 @@
-// ReSharper disable MemberCanBePrivate.Global
-
-using System.Globalization;
-using System.Net.Mail;
 using System.Text.RegularExpressions;
-using System.Threading.Channels;
+
+using JetBrains.Annotations;
 
 namespace Pushover.Net;
 
+[PublicAPI]
 public partial class PushoverMessageBuilder
 {
     private readonly List<string> _recipientKeys = [];

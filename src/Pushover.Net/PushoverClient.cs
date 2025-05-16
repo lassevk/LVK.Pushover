@@ -25,6 +25,11 @@ internal class PushoverClient : IPushoverClient
 
     public async Task<PushoverUserValidationResponse> ValidateUserOrGroupAsync(string userKey, string? deviceId = null, CancellationToken cancellationToken = default)
     {
+        if (ValidationHelper.ValidateUserOrGroupKey(userKey) == null)
+        {
+            throw new ArgumentException("User or group key is invalid.", nameof(userKey));
+        }
+
         var requestBuilder = new PushoverRequestBuilder();
         requestBuilder.AddIfNotNullOrEmpty("token", _options.ApiToken);
         requestBuilder.AddIfNotNullOrEmpty("user", userKey);
@@ -41,6 +46,11 @@ internal class PushoverClient : IPushoverClient
 
     public async Task<PushoverCancelRetriesResponse> CancelRetriesAsync(string receiptId, CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(receiptId))
+        {
+            throw new ArgumentNullException(nameof(receiptId));
+        }
+
         var requestBuilder = new PushoverRequestBuilder();
         requestBuilder.AddIfNotNullOrEmpty("token", _options.ApiToken);
         string url = $"{_pushoverApiReceiptsBaseUrl}/{receiptId}/cancel.json";
@@ -50,6 +60,15 @@ internal class PushoverClient : IPushoverClient
 
     public async Task<PushoverCancelRetriesResponse> CancelRetriesByTagAsync(PushoverMessageTag tag, CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(tag.Key))
+        {
+            throw new ArgumentException("Tag key cannot be null or whitespace.", nameof(tag));
+        }
+        if (string.IsNullOrWhiteSpace(tag.Value))
+        {
+            throw new ArgumentException("Tag value cannot be null or whitespace.", nameof(tag));
+        }
+
         var requestBuilder = new PushoverRequestBuilder();
         requestBuilder.AddIfNotNullOrEmpty("token", _options.ApiToken);
         string url = $"{_pushoverApiReceiptsBaseUrl}/cancel_by_tag/{tag}.json";
@@ -78,6 +97,8 @@ internal class PushoverClient : IPushoverClient
 
     public async Task<PushoverSendMessageResponse> SendMessageAsync(Action<PushoverMessageBuilder> configureMessage, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(configureMessage);
+
         var messageBuilder = new PushoverMessageBuilder();
         configureMessage(messageBuilder);
         messageBuilder.AddDefaultUserIfNeeded(_options.DefaultUserKey);

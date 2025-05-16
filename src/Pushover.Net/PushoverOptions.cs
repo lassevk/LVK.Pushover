@@ -1,5 +1,8 @@
+using JetBrains.Annotations;
+
 namespace Pushover.Net;
 
+[PublicAPI]
 public class PushoverOptions
 {
     public string? ApiToken { get; private set; }
