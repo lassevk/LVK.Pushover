@@ -104,23 +104,23 @@ public partial class PushoverMessageBuilder
     {
         if (!Enum.IsDefined(priority))
         {
-            throw new InvalidOperationException($"Invalid priority: {priority}.");
+            throw new ArgumentOutOfRangeException(nameof(priority), $"Invalid priority: {priority}.");
         }
 
         if (priority == PushoverMessagePriority.Emergency)
         {
             if (retryInterval == TimeSpan.Zero)
             {
-                throw new InvalidOperationException("Retry interval is required for emergency priority.");
+                throw new ArgumentException("Retry interval is required for emergency priority.", nameof(retryInterval));
             }
             if (retryInterval < TimeSpan.FromSeconds(30))
             {
-                throw new InvalidOperationException("Retry interval must be at least 30 seconds for emergency priority.");
+                throw new ArgumentOutOfRangeException(nameof(retryInterval), "Retry interval must be at least 30 seconds for emergency priority.");
             }
 
             if (expiresAfter == TimeSpan.Zero)
             {
-                throw new InvalidOperationException("Expires after is required for emergency priority.");
+                throw new ArgumentException("Expires after is required for emergency priority.", nameof(expiresAfter));
             }
         }
         else

@@ -237,4 +237,216 @@ public class PushoverMessageBuilderTests
                                         --abcdef--
                                         """));
     }
+
+    [TestCase(PushoverMessageSound.Default, "pushover")]
+    [TestCase(PushoverMessageSound.Bike, "bike")]
+    public async Task WithSound_WithTestCases_AddsItToContent(PushoverMessageSound sound, string expected)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithSound(sound);
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=sound
+
+                                        {expected}
+                                        --abcdef--
+                                        """));
+    }
+
+    [TestCase("plingplong")]
+    [TestCase("doink")]
+    public async Task WithCustomSound_WithTestCases_AddsItToContent(string sound)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithCustomSound(sound);
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=sound
+
+                                        {sound}
+                                        --abcdef--
+                                        """));
+    }
+
+    [Test]
+    public async Task WithLowestPriority_OutputsCorrectContent()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithLowestPriority();
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=priority
+
+                                        -2
+                                        --abcdef--
+                                        """));
+    }
+
+    [Test]
+    public async Task WithLowPriority_OutputsCorrectContent()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithLowPriority();
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=priority
+
+                                        -1
+                                        --abcdef--
+                                        """));
+    }
+
+    [Test]
+    public async Task WithNormalPriority_OutputsCorrectContent()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithNormalPriority();
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+
+                                        --abcdef--
+                                        """));
+    }
+
+    [Test]
+    public async Task WithHighPriority_OutputsCorrectContent()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithHighPriority();
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=priority
+
+                                        1
+                                        --abcdef--
+                                        """));
+    }
+
+    [Test]
+    public async Task WithEmergencyPriority_OutputsCorrectContent()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithEmergencyPriority(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(600), "https://callback");
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=priority
+
+                                        2
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=retry
+
+                                        30
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=expire
+
+                                        600
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=callback
+
+                                        https://callback
+                                        --abcdef--
+                                        """));
+    }
+
+    [Test]
+    public void WithPriority_InvalidPriority_ThrowsArgumentOutOfRangeException()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        Assert.Throws<ArgumentOutOfRangeException>(() => messageBuilder.WithPriority((PushoverMessagePriority)100));
+    }
+
+    [Test]
+    public void WithPriority_EmergencyPriorityButNoRetry_ThrowsInvalidOperationException()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        Assert.Throws<ArgumentException>(() => messageBuilder.WithPriority(PushoverMessagePriority.Emergency, TimeSpan.Zero, TimeSpan.FromSeconds(600), "https://callback"));
+    }
+
+    [Test]
+    public void WithPriority_EmergencyPriorityButNoExpiry_ThrowsInvalidOperationException()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        Assert.Throws<ArgumentException>(() => messageBuilder.WithPriority(PushoverMessagePriority.Emergency, TimeSpan.FromSeconds(30), TimeSpan.Zero, "https://callback"));
+    }
+
+    [Test]
+    public void WithPriority_EmergencyPriorityWithRetryLessThan30Seconds_ThrowsInvalidOperationException()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        Assert.Throws<ArgumentOutOfRangeException>(() => messageBuilder.WithPriority(PushoverMessagePriority.Emergency, TimeSpan.FromSeconds(15), TimeSpan.FromSeconds(600), "https://callback"));
+    }
+
+    [TestCase(PushoverMessagePriority.Lowest)]
+    [TestCase(PushoverMessagePriority.Low)]
+    [TestCase(PushoverMessagePriority.Normal)]
+    [TestCase(PushoverMessagePriority.High)]
+    public void WithPriority_NonEmergencyPriorityWithRetry_ThrowsInvalidOperationException(PushoverMessagePriority priority)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        Assert.Throws<InvalidOperationException>(() => messageBuilder.WithPriority(priority, TimeSpan.FromSeconds(30), TimeSpan.Zero));
+    }
+
+    [TestCase(PushoverMessagePriority.Lowest)]
+    [TestCase(PushoverMessagePriority.Low)]
+    [TestCase(PushoverMessagePriority.Normal)]
+    [TestCase(PushoverMessagePriority.High)]
+    public void WithPriority_NonEmergencyPriorityWithExpiry_ThrowsInvalidOperationException(PushoverMessagePriority priority)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        Assert.Throws<InvalidOperationException>(() => messageBuilder.WithPriority(priority, TimeSpan.Zero, TimeSpan.FromSeconds(30)));
+    }
+
+    [TestCase(PushoverMessagePriority.Lowest)]
+    [TestCase(PushoverMessagePriority.Low)]
+    [TestCase(PushoverMessagePriority.Normal)]
+    [TestCase(PushoverMessagePriority.High)]
+    public void WithPriority_NonEmergencyPriorityWithCallback_ThrowsInvalidOperationException(PushoverMessagePriority priority)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        Assert.Throws<InvalidOperationException>(() => messageBuilder.WithPriority(priority, TimeSpan.Zero, TimeSpan.Zero, "https://callback"));
+    }
 }
