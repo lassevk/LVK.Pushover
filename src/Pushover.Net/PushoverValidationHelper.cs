@@ -107,9 +107,9 @@ internal static partial class PushoverValidationHelper
         title = title.Trim();
         return title.Length switch
         {
-            0    => null,
-            > 25 => throw new InvalidOperationException("Url title cannot be longer than 250 characters."),
-            _    => title,
+            0     => null,
+            > 250 => throw new InvalidOperationException("Url title cannot be longer than 250 characters."),
+            _     => title,
         };
     }
 }

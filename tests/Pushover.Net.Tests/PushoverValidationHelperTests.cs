@@ -65,4 +65,28 @@ public class PushoverValidationHelperTests
     {
         Assert.Throws<InvalidOperationException>(() => PushoverValidationHelper.ValidateUserOrGroupKey(input));
     }
+
+    [TestCase(null, null)]
+    [TestCase("", null)]
+    [TestCase("Hello world!", "Hello world!")]
+    public void ValidateUrlTitle_WithTestCases_ReturnsExpectedResults(string? input, string? expected)
+    {
+        string? output = PushoverValidationHelper.ValidateUrlTitle(input);
+
+        Assert.That(output, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void ValidateUrlTitle_TitleWithLengthOf250Characters_DoesNotThrowInvalidOperationException()
+    {
+        string title = new string('a', 250);
+        PushoverValidationHelper.ValidateUrlTitle(title);
+    }
+
+    [Test]
+    public void ValidateUrlTitle_TitleLongerThan250Characters_ThrowsInvalidOperationException()
+    {
+        string title = new string('a', 251);
+        Assert.Throws<InvalidOperationException>(() => PushoverValidationHelper.ValidateUrlTitle(title));
+    }
 }
