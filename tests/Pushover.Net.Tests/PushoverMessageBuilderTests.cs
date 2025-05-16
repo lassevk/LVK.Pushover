@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Pushover.Net.Tests;
 
 public class PushoverMessageBuilderTests
@@ -448,5 +450,46 @@ public class PushoverMessageBuilderTests
     {
         var messageBuilder = new PushoverMessageBuilder();
         Assert.Throws<InvalidOperationException>(() => messageBuilder.WithPriority(priority, TimeSpan.Zero, TimeSpan.Zero, "https://callback"));
+    }
+
+    [TestCase(30)]
+    [TestCase(600)]
+    public async Task WithTimeToLive_OutputsCorrectContent(int ttlSeconds)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithTimeToLive(TimeSpan.FromSeconds(ttlSeconds));
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=ttl
+
+                                        {ttlSeconds}
+                                        --abcdef--
+                                        """));
+    }
+
+    [Test]
+    public async Task WithTimestamp_OutputsCorrectContent()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithTimestamp(new DateTimeOffset(2012, 3, 8, 17, 34, 22, TimeSpan.FromHours(-6)));
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo("""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=timestamp
+
+                                        1331249662
+                                        --abcdef--
+                                        """));
     }
 }
