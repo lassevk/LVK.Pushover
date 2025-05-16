@@ -169,4 +169,72 @@ public class PushoverMessageBuilderTests
                                         --abcdef--
                                         """));
     }
+
+    [TestCase("https://google.com")]
+    [TestCase("https://github.com")]
+    public async Task WithUrl_WithTestCases_AddsItToContent(string url)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithUrl(url);
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=url
+
+                                        {url}
+                                        --abcdef--
+                                        """));
+    }
+
+    [TestCase("Google")]
+    [TestCase("GitHub")]
+    public async Task WithUrlTitle_WithTestCases_AddsItToContent(string title)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithUrlTitle(title);
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=url_title
+
+                                        {title}
+                                        --abcdef--
+                                        """));
+    }
+
+    [TestCase("https://google.com", "Google")]
+    [TestCase("https://github.com", "GitHub")]
+    public async Task WithUrlWithTitle_WithTestCases_AddsItToContent(string url, string title)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithUrlWithTitle(url, title);
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=url
+
+                                        {url}
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=url_title
+
+                                        {title}
+                                        --abcdef--
+                                        """));
+    }
 }

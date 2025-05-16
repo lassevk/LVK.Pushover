@@ -1,4 +1,9 @@
 ﻿<Solution>
+  <Folder Name="/@configuration/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+  </Folder>
   <Folder Name="/@documents/">
     <File Path="README.md" />
   </Folder>
