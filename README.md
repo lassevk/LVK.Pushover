@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/lassevk/LVK.Pushover/graph/badge.svg?token=N58US136E7)](https://codecov.io/gh/lassevk/LVK.Pushover)
 [![codeql](https://github.com/lassevk/LVK.Pushover/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/lassevk/LVK.Pushover/actions/workflows/github-code-scanning/codeql)
 
-This library add a comprehensive client for the [LVK.Pushover](https://LVK.Pushover)
+This library add a comprehensive client for the [pushover.net](https://LVK.Pushover)
 push notification service to .NET.
 
 ## Installation
@@ -12,7 +12,7 @@ push notification service to .NET.
 Install the [LVK.Pushover](https://www.nuget.org/packages/LVK.Pushover) package using your
 favorite nuget package tool, or the command line:
 
-    dotnet nuget install PushLVK.Pushoveret
+    dotnet nuget install LVK.Pushover
 
 ## Configuration
 
