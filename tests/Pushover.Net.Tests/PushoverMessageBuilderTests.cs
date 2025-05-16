@@ -492,4 +492,95 @@ public class PushoverMessageBuilderTests
                                         --abcdef--
                                         """));
     }
+
+    [TestCase(".txt", "text/plain")]
+    [TestCase(".jpg", "image/jpeg")]
+    public async Task WithAttachment_ByFilename_OutputsCorrectContent(string extension, string mimeType)
+    {
+        string tempFilePath = Path.Combine(Path.GetTempPath(), "rather-unique-file" + extension);
+        File.WriteAllBytes(tempFilePath, [1, 2, 3, 4]);
+
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithAttachment(tempFilePath);
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: {mimeType}
+                                        Content-Disposition: form-data; name=attachment; filename=rather-unique-file{extension}; filename*=utf-8''rather-unique-file{extension}
+
+                                        {"\u0001\u0002\u0003\u0004"}
+                                        --abcdef--
+                                        """));
+    }
+
+    [TestCase(".txt", "text/plain")]
+    [TestCase(".jpg", "image/jpeg")]
+    public async Task WithAttachment_ByFileInfo_OutputsCorrectContent(string extension, string mimeType)
+    {
+        string tempFilePath = Path.Combine(Path.GetTempPath(), "rather-unique-file" + extension);
+        File.WriteAllBytes(tempFilePath, [1, 2, 3, 4]);
+
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithAttachment(new FileInfo(tempFilePath));
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: {mimeType}
+                                        Content-Disposition: form-data; name=attachment; filename=rather-unique-file{extension}; filename*=utf-8''rather-unique-file{extension}
+
+                                        {"\u0001\u0002\u0003\u0004"}
+                                        --abcdef--
+                                        """));
+    }
+
+    [TestCase(".txt", "text/plain")]
+    [TestCase(".jpg", "image/jpeg")]
+    public async Task WithAttachment_ByStream_OutputsCorrectContent(string extension, string mimeType)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        var stream = new MemoryStream([1, 2, 3, 4]);
+        messageBuilder.WithAttachment("rather-unique-file" + extension, stream, mimeType);
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: {mimeType}
+                                        Content-Disposition: form-data; name=attachment; filename=rather-unique-file{extension}; filename*=utf-8''rather-unique-file{extension}
+
+                                        {"\u0001\u0002\u0003\u0004"}
+                                        --abcdef--
+                                        """));
+    }
+
+    [TestCase(".txt", "text/plain")]
+    [TestCase(".jpg", "image/jpeg")]
+    public async Task WithAttachment_BySpan_OutputsCorrectContent(string extension, string mimeType)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithAttachment("rather-unique-file" + extension, [1, 2, 3, 4], mimeType);
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: {mimeType}
+                                        Content-Disposition: form-data; name=attachment; filename=rather-unique-file{extension}; filename*=utf-8''rather-unique-file{extension}
+
+                                        {"\u0001\u0002\u0003\u0004"}
+                                        --abcdef--
+                                        """));
+    }
 }
