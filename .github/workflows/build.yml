@@ -1,7 +1,9 @@
 name: Build and run tests
 
 on:
-  push
+  push:
+    branches:
+      - '**'
 
 env:
   DOTNET_SDK_VERSION: '9.0.x'
