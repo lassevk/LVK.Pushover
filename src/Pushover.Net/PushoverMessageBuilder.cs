@@ -239,7 +239,7 @@ public partial class PushoverMessageBuilder
 
     internal void ConfigureRequest(PushoverRequestBuilder builder)
     {
-        builder.AddIfNotNullOrEmpty("user", string.Join(",", _recipientKeys));
+        builder.AddIfNotNullOrEmpty("user", string.Join(",", _recipientKeys.Distinct().Order()));
         builder.AddIfNotNullOrEmpty("message", _message);
         builder.AddIfNotNullOrEmpty("title", _title);
 

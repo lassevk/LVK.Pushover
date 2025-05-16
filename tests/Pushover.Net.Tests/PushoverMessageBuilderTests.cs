@@ -108,4 +108,65 @@ public class PushoverMessageBuilderTests
                                        --abcdef--
                                        """));
     }
+
+    [Test]
+    public async Task WithRecipient_TwoRecipients_AddsThemBothToContent()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithRecipients("000000000000000000000000000000", "012345678901234567890123456789");
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=user
+
+                                        000000000000000000000000000000,012345678901234567890123456789
+                                        --abcdef--
+                                        """));
+    }
+
+    [Test]
+    public async Task WithRecipient_SameRecipientTwice_AddsRecipientToContentOnlyOnce()
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithRecipients("000000000000000000000000000000", "000000000000000000000000000000");
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=user
+
+                                        000000000000000000000000000000
+                                        --abcdef--
+                                        """));
+    }
+
+    [TestCase("This is a title")]
+    [TestCase("TEST")]
+    public async Task WithTitle_WithTestCases_AddsItToContent(string title)
+    {
+        var messageBuilder = new PushoverMessageBuilder();
+        messageBuilder.WithTitle(title);
+
+        var requestBuilder = new PushoverRequestBuilder("abcdef");
+        messageBuilder.ConfigureRequest(requestBuilder);
+
+        string output = (await requestBuilder.Content.ReadAsStringAsync()).TrimEnd();
+        Assert.That(output, Is.EqualTo($"""
+                                        --abcdef
+                                        Content-Type: text/plain; charset=utf-8
+                                        Content-Disposition: form-data; name=title
+
+                                        {title}
+                                        --abcdef--
+                                        """));
+    }
 }
