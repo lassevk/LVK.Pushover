@@ -1,18 +1,18 @@
-# Pushover.Net
+# LVK.Pushover
 
-[![build](https://github.com/lassevk/Pushover.Net/actions/workflows/build.yml/badge.svg)](https://github.com/lassevk/Pushover.Net/actions/workflows/build.yml)
-[![codecov](https://codecov.io/gh/lassevk/Pushover.Net/graph/badge.svg?token=N58US136E7)](https://codecov.io/gh/lassevk/Pushover.Net)
-[![codeql](https://github.com/lassevk/Pushover.NEt/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/lassevk/Pushover.Net/actions/workflows/github-code-scanning/codeql)
+[![build](https://github.com/lassevk/LVK.Pushover/actions/workflows/build.yml/badge.svg)](https://github.com/lassevk/LVK.Pushover/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/lassevk/LVK.Pushover/graph/badge.svg?token=N58US136E7)](https://codecov.io/gh/lassevk/LVK.Pushover)
+[![codeql](https://github.com/lassevk/LVK.Pushover/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/lassevk/LVK.Pushover/actions/workflows/github-code-scanning/codeql)
 
-This library add a comprehensive client for the [pushover.net](https://pushover.net)
+This library add a comprehensive client for the [LVK.Pushover](https://LVK.Pushover)
 push notification service to .NET.
 
 ## Installation
 
-Install the [Pushover.Net](https://www.nuget.org/packages/Pushover.NET) package using your
+Install the [LVK.Pushover](https://www.nuget.org/packages/LVK.Pushover) package using your
 favorite nuget package tool, or the command line:
 
-    dotnet nuget install Pushover.Net
+    dotnet nuget install PushLVK.Pushoveret
 
 ## Configuration
 
@@ -48,7 +48,7 @@ notifications, here is an example:
 
 Supports the following Pushover features:
 
-* Send to one or multiple users or user groups (defined on pushover.net web site)
+* Send to one or multiple users or user groups (defined on LVK.Pushover web site)
 * Send to default or specific device(s)
 * Html formatting, Monospace formatting
 * Override message timestamp
@@ -74,7 +74,7 @@ Specifically, these features looks interesting:
 * Teams API
 * Licensing API
 
-You can read more about these in the API documentation [here](https://pushover.net/api).
+You can read more about these in the API documentation [here](https://LVK.Pushover/api).
 
 If there are APIs here that you would like to have now, please create an issue and
 describe your usecase, and I might prioritize getting it implemented.

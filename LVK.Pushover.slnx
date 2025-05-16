@@ -1,0 +1,24 @@
+﻿<Solution>
+  <Folder Name="/@configuration/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+  </Folder>
+  <Folder Name="/@documents/">
+    <File Path="README.md" />
+    <File Path="LICENSE.md" />
+  </Folder>
+  <Folder Name="/@github/">
+    <File Path=".github\workflows\build.yml" />
+    <File Path=".github\workflows\publish.yml" />
+  </Folder>
+  <Folder Name="/sandboxes/">
+    <Project Path="sandboxes\LVK.Pushover.ConsoleSandbox\LVK.Pushover.ConsoleSandbox.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src\LVK.Pushover\LVK.Pushover.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests\LVK.Pushover.Tests\LVK.Pushover.Tests.csproj" Type="Classic C#" />
+  </Folder>
+</Solution>
