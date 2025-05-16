@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 using JetBrains.Annotations;
 
 namespace Pushover.Net;
@@ -10,6 +12,7 @@ namespace Pushover.Net;
 /// related to the failure of the request. Errors can be accessed via the <see cref="Errors"/> property.
 /// </remarks>
 [PublicAPI]
+[ExcludeFromCodeCoverage]
 public class PushoverApiRequestFailedException : InvalidOperationException
 {
     /// <summary>
